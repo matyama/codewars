@@ -1,6 +1,7 @@
-.PHONY: check fmt lint tests
+.PHONY: all check fmt lint tests
+.DEFAULT_GOAL := all
 
-setup:
+install:
 	poetry env use python3.8
 	poetry install
 
@@ -17,3 +18,5 @@ tests:
 	pytest
 
 check: lint tests
+
+all: fmt check
