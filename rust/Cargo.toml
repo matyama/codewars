@@ -2,6 +2,7 @@
 members = [
     "best-travel",
     "caa-stats",
+    "in-array",
     "molecule",
     "parts-sums",
 ]
