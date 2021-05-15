@@ -4,6 +4,7 @@ members = [
     "bouncing-balls",
     "caa-stats",
     "count-duplicates",
+    "delete-nth",
     "dubstep",
     "in-array",
     "molecule",
