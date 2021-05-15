@@ -1,0 +1,77 @@
+[tool.poetry]
+name = "codewars"
+version = "0.1.0"
+description = "Python versions of Codewars Katas"
+license = "MIT"
+authors = ["Martin Matyášek <martin.matyasek@gmail.com>"]
+readme = "README.md"
+homepage = "https://codewars.com/users/matyama"
+repository = "https://github.com/matyama/codewars"
+keywords = ["codewars", "python", "algorithms"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Programming Language :: Python :: 3.8",
+    "Operating System :: Unix",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+flake8 = "*"
+flake8-black = "*"
+flake8-comprehensions = "*"
+flake8-isort = "*"
+flake8-mutable = "*"
+flake8-pytest = "*"
+mypy = "*"
+pylint = "*"
+pytest = "^5.2"
+
+[tool.black]
+line-length = 79
+target-version = ['py38']
+skip-string-normalization = true
+
+[tool.isort]
+multi_line_output = 3
+line_length = 79
+include_trailing_comma = true
+
+[tool.mypy]
+cache_dir = "/dev/null"
+ignore_missing_imports = false
+python_version = 3.8
+
+# equivalent to --strict except for the modifications above:
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+warn_unused_configs = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pytest",
+    "_pytest",
+]
+ignore_missing_imports = true
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
