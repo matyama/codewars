@@ -1,8 +1,8 @@
 use chrono::{Duration, NaiveTime};
 
-const TIME_FMT: &str = "%H|%M|%S";
+pub const TIME_FMT: &str = "%H|%M|%S";
 
-fn stati(strg: &str) -> String {
+pub fn stati(strg: &str) -> String {
     if strg.is_empty() {
         return strg.into();
     }

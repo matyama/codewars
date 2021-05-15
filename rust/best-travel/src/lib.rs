@@ -1,7 +1,6 @@
-extern crate itertools;
 use itertools::Itertools;
 
-fn choose_best_sum(t: i32, k: i32, ls: &Vec<i32>) -> i32 {
+pub fn choose_best_sum(t: i32, k: i32, ls: &Vec<i32>) -> i32 {
     ls.iter()
         .combinations(k as usize)
         .map(|dists| dists.iter().copied().sum())
