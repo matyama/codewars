@@ -6,6 +6,7 @@
 * [Valid Parentheses](https://www.codewars.com/kata/52774a314c2333f0a7000688)
 
 ## 6 kyu
+* [Build a pile of Cubes](https://www.codewars.com/kata/5592e3bd57b64d00f3000047)
 * [Decode the Morse code](https://www.codewars.com/kata/54b724efac3d5402db00065e)
 * [Detect Pangram](https://www.codewars.com/kata/545cedaa9943f7fe7b000048)
 * [Elimination Tournament](https://www.codewars.com/kata/5f631ed489e0e101a70c70a0)
