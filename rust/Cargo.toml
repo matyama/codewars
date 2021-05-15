@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "best-travel",
+    "caa-stats",
+]
+
