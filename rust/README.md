@@ -10,3 +10,6 @@
 * [Statistics for an Athletic Association](https://www.codewars.com/kata/55b3425df71c1201a800009c)
 * [Sums of Parts](https://www.codewars.com/kata/5ce399e0047a45001c853c2b)
 * [Which are in?](https://www.codewars.com/kata/550554fd08b86f84fe000a58)
+
+## 7 kyu
+* [Growth of a Population](https://www.codewars.com/kata/563b662a59afc2b5120000c6)
