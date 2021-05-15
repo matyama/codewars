@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "best-travel",
+    "bouncing-balls",
     "caa-stats",
     "dubstep",
     "in-array",
