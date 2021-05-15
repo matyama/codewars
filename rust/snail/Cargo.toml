@@ -1,0 +1,10 @@
+[package]
+name = "snail"
+description = "https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1"
+homepage = "https://github.com/matyama/codewars"
+readme = "../README.md"
+version = "0.1.0"
+authors = ["Martin Matyášek <martin.matyasek@gmail.com>"]
+edition = "2018"
+
+[dependencies]
