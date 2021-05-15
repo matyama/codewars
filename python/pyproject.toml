@@ -65,6 +65,9 @@ module = [
 ]
 ignore_missing_imports = true
 
+[tool.pylint.basic]
+good-names="i,j,k,m,n,ex,Run,_,pk,x,y"
+
 [tool.pylint.messages_control]
 disable = [
     "missing-module-docstring",
