@@ -3,6 +3,7 @@ members = [
     "best-travel",
     "bouncing-balls",
     "caa-stats",
+    "count-duplicates",
     "dubstep",
     "in-array",
     "molecule",

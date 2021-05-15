@@ -1,0 +1,10 @@
+[package]
+name = "count-duplicates"
+description = "https://www.codewars.com/kata/54bf1c2cd5b56cc47f0007a1"
+homepage = "https://github.com/matyama/codewars"
+readme = "../README.md"
+version = "0.1.0"
+authors = ["Martin Matyášek <martin.matyasek@gmail.com>"]
+edition = "2018"
+
+[dependencies]
