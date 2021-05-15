@@ -1,5 +1,8 @@
 # Python Katas
 
+## 5 kyu
+* [Directions Reduction](https://www.codewars.com/kata/550f22f4d758534c1100025a)
+
 ## 6 kyu
 * [Decode the Morse code](https://www.codewars.com/kata/54b724efac3d5402db00065e)
 * [Detect Pangram](https://www.codewars.com/kata/545cedaa9943f7fe7b000048)
