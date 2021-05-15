@@ -9,6 +9,7 @@ members = [
     "in-array",
     "molecule",
     "parts-sums",
+    "perimeter",
     "population-growth",
     "product-fib",
 ]

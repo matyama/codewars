@@ -1,0 +1,10 @@
+[package]
+name = "perimeter"
+description = "https://www.codewars.com/kata/559a28007caad2ac4e000083"
+homepage = "https://github.com/matyama/codewars"
+readme = "../README.md"
+version = "0.1.0"
+authors = ["Martin Matyášek <martin.matyasek@gmail.com>"]
+edition = "2018"
+
+[dependencies]
