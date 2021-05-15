@@ -2,6 +2,7 @@
 
 ## 5 kyu
 * [Directions Reduction](https://www.codewars.com/kata/550f22f4d758534c1100025a)
+* [Human Readable Time](https://www.codewars.com/kata/52685f7382004e774f0001f7)
 
 ## 6 kyu
 * [Decode the Morse code](https://www.codewars.com/kata/54b724efac3d5402db00065e)
