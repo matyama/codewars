@@ -1,0 +1,10 @@
+[package]
+name = "persistent-bugger"
+description = "https://www.codewars.com/kata/55bf01e5a717a0d57e0000ec"
+homepage = "https://github.com/matyama/codewars"
+readme = "../README.md"
+version = "0.1.0"
+authors = ["Martin Matyášek <martin.matyasek@gmail.com>"]
+edition = "2018"
+
+[dependencies]

@@ -11,6 +11,7 @@
 * [Counting Duplicates](https://www.codewars.com/kata/54bf1c2cd5b56cc47f0007a1)
 * [Delete nth](https://www.codewars.com/kata/554ca54ffa7d91b236000023)
 * [Dubstep](https://www.codewars.com/kata/551dc350bf4e526099000ae5)
+* [Persistent Bugger](https://www.codewars.com/kata/55bf01e5a717a0d57e0000ec)
 * [Statistics for an Athletic Association](https://www.codewars.com/kata/55b3425df71c1201a800009c)
 * [Sums of Parts](https://www.codewars.com/kata/5ce399e0047a45001c853c2b)
 * [Which are in?](https://www.codewars.com/kata/550554fd08b86f84fe000a58)
