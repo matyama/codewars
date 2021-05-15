@@ -9,5 +9,6 @@ members = [
     "molecule",
     "parts-sums",
     "population-growth",
+    "product-fib",
 ]
 

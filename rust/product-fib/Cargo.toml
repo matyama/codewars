@@ -1,0 +1,10 @@
+[package]
+name = "product-fib"
+description = "https://www.codewars.com/kata/5541f58a944b85ce6d00006a"
+homepage = "https://github.com/matyama/codewars"
+readme = "../README.md"
+version = "0.1.0"
+authors = ["Martin Matyášek <martin.matyasek@gmail.com>"]
+edition = "2018"
+
+[dependencies]
