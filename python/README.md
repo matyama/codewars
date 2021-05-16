@@ -6,6 +6,7 @@
 ## 4 kyu
 * [Conway's Game of Life](https://www.codewars.com/kata/52423db9add6f6fc39000354)
 * [Range Extraction](https://www.codewars.com/kata/51ba717bb08c1cd60f00002f)
+* [Shortest Knight Path](https://www.codewars.com/kata/549ee8b47111a81214000941)
 * [The observed PIN](https://www.codewars.com/kata/5263c6999e0f40dee200059d)
 
 ## 5 kyu
