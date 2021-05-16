@@ -4,6 +4,7 @@
 * [Sudoku Solver](https://www.codewars.com/kata/5296bc77afba8baa690002d7)
 
 ## 4 kyu
+* [Range Extraction](https://www.codewars.com/kata/51ba717bb08c1cd60f00002f)
 * [The observed PIN](https://www.codewars.com/kata/5263c6999e0f40dee200059d)
 
 ## 5 kyu
