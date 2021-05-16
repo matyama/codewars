@@ -1,6 +1,7 @@
 # Python Katas
 
 ## 3 kyu
+* [Closest pair of points in linearithmic time](https://www.codewars.com/kata/5376b901424ed4f8c20002b7)
 * [Sudoku Solver](https://www.codewars.com/kata/5296bc77afba8baa690002d7)
 
 ## 4 kyu
