@@ -3,6 +3,7 @@
 ## 5 kyu
 * [Directions Reduction](https://www.codewars.com/kata/550f22f4d758534c1100025a)
 * [Human Readable Time](https://www.codewars.com/kata/52685f7382004e774f0001f7)
+* [Number of trailing zeros of N!](https://www.codewars.com/kata/52f787eb172a8b4ae1000a34)
 * [RGB To Hex Conversion](https://www.codewars.com/kata/513e08acc600c94f01000001)
 * [Valid Parentheses](https://www.codewars.com/kata/52774a314c2333f0a7000688)
 * [What's a Perfect Power anyway?](https://www.codewars.com/kata/54d4c8b08776e4ad92000835)
