@@ -1,5 +1,8 @@
 # Python Katas
 
+## 4 kyu
+* [The observed PIN](https://www.codewars.com/kata/5263c6999e0f40dee200059d)
+
 ## 5 kyu
 * [Directions Reduction](https://www.codewars.com/kata/550f22f4d758534c1100025a)
 * [Human Readable Time](https://www.codewars.com/kata/52685f7382004e774f0001f7)
