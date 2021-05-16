@@ -1,5 +1,8 @@
 # Python Katas
 
+## 3 kyu
+* [Sudoku Solver](https://www.codewars.com/kata/5296bc77afba8baa690002d7)
+
 ## 4 kyu
 * [The observed PIN](https://www.codewars.com/kata/5263c6999e0f40dee200059d)
 

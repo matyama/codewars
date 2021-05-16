@@ -66,7 +66,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.pylint.basic]
-good-names="a,b,c,f,g,h,i,j,k,m,n,p,q,r,s,t,v,x,y,z,ex,ls,pk,Run,_"
+good-names="a,b,c,f,g,h,i,j,k,m,n,p,q,r,s,t,v,x,y,z,N,ex,ls,pk,Run,_"
 
 [tool.pylint.messages_control]
 disable = [
