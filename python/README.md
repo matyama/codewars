@@ -1,5 +1,8 @@
 # Python Katas
 
+## 2 kyu
+* [Symbolic differentiation of prefix expressions](https://www.codewars.com/kata/584daf7215ac503d5a0001ae)
+
 ## 3 kyu
 * [Closest pair of points in linearithmic time](https://www.codewars.com/kata/5376b901424ed4f8c20002b7)
 * [Sudoku Solver](https://www.codewars.com/kata/5296bc77afba8baa690002d7)
