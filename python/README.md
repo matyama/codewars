@@ -7,6 +7,7 @@
 * [RGB To Hex Conversion](https://www.codewars.com/kata/513e08acc600c94f01000001)
 * [Valid Parentheses](https://www.codewars.com/kata/52774a314c2333f0a7000688)
 * [What's a Perfect Power anyway?](https://www.codewars.com/kata/54d4c8b08776e4ad92000835)
+* [Where my anagrams at?](https://www.codewars.com/kata/523a86aa4230ebb5420001e1)
 
 ## 6 kyu
 * [Build a pile of Cubes](https://www.codewars.com/kata/5592e3bd57b64d00f3000047)
