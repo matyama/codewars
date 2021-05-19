@@ -7,9 +7,9 @@ pub type Molecule = Vec<Atom>;
 pub enum ParseError {
     InvalidAtomName,
     UnsupportedToken,
+    MismatchedBrackets,
 }
 
-#[derive(Debug)]
 enum Element {
     Atom(String),
     Count(usize),
@@ -17,58 +17,87 @@ enum Element {
     CloseBracket(char),
 }
 
-fn count_atoms(elems: &mut Vec<Element>) -> HashMap<String, usize> {
-    let mut atom_counts = HashMap::new();
-    let mut counts: Vec<usize> = Vec::new();
+enum Count {
+    Atom(usize),
+    Multiple(usize),
+}
 
-    println!("{:?}", elems);
+impl From<&Count> for usize {
+    fn from(cnt: &Count) -> Self {
+        match cnt {
+            Count::Atom(c) => *c,
+            Count::Multiple(c) => *c,
+        }
+    }
+}
+
+fn count_atoms(elems: &mut Vec<Element>) -> Result<HashMap<String, usize>, ParseError> {
+    let mut counts = HashMap::new();
+    let mut multipliers: Vec<(usize, char)> = Vec::new();
+    let mut cnt: Option<Count> = None;
 
     while let Some(last) = elems.pop() {
-        let mut cnt: Option<usize> = None;
-        println!("elem: {:?}\tcnt: {:?}\tcounts: {:?}", last, cnt, counts);
         match last {
             Element::Count(n) => {
-                cnt = Some(counts.last().map(|c| c * n).unwrap_or(n));
-                println!("new count: {:?}", cnt);
+                let count = multipliers.last().map_or(n, |(m, _)| m * n);
+                let count = if let Some(Element::Atom(_)) = elems.last() {
+                    Count::Atom(count)
+                } else {
+                    Count::Multiple(count)
+                };
+                cnt = Some(count);
             }
             Element::Atom(name) => {
-                let count = cnt.or(counts.last().cloned()).unwrap_or(1);
-                // FIXME: cnt update does not carry through
-                println!("updating {} with {}, cnt: {:?}", name, count, cnt);
-                *atom_counts.entry(name).or_default() += count;
-            }
-            Element::OpenBracket(bracket) => {
-                if let Some(c) = cnt {
-                    // TODO: push (c, closing_bracket)
-                    counts.push(c);
-                }
+                let last_cnt = multipliers.last().map(|(c, _)| c).cloned();
+                let count = match cnt {
+                    Some(Count::Atom(count)) => {
+                        // Retrack to the last multiplier when accounted for
+                        // single atom (i.e. not a sub-molecule)
+                        cnt = last_cnt.map(Count::Multiple);
+                        count
+                    }
+                    Some(Count::Multiple(count)) => count,
+                    None => last_cnt.unwrap_or(1),
+                };
+                *counts.entry(name).or_default() += count;
             }
             Element::CloseBracket(bracket) => {
-                // TODO: checks that
-                //  1. there is still some element to pop
-                //  2. that the bracket type matches -> (mul, expected)
-                counts.pop();
-                cnt = None;
+                if let Some(ref count) = cnt {
+                    // Record expected reverse bracket
+                    let open_bracket = match bracket {
+                        ')' => '(',
+                        ']' => '[',
+                        '}' => '{',
+                        _ => unreachable!("No other brackets are allowed"),
+                    };
+                    multipliers.push((count.into(), open_bracket));
+                }
             }
+            Element::OpenBracket(bracket) => match multipliers.pop() {
+                Some((_, expected)) if bracket == expected => {
+                    cnt = None;
+                }
+                _ => return Err(ParseError::MismatchedBrackets),
+            },
         }
     }
 
-    atom_counts
+    Ok(counts)
 }
 
-pub fn parse_molecule(s: &str) -> Result<Molecule, ParseError> {
-    let mut stack: Vec<Element> = Vec::new();
+fn tokenize(molecule: &str) -> Result<Vec<Element>, ParseError> {
+    let mut elems: Vec<Element> = Vec::new();
 
-    for symbol in s.chars() {
+    for symbol in molecule.chars() {
         match symbol {
             // Handle atoms
             _ if symbol.is_alphabetic() => {
                 if symbol.is_uppercase() {
                     // Create new atom
-                    stack.push(Element::Atom(symbol.to_string()));
+                    elems.push(Element::Atom(symbol.to_string()));
                 } else {
                     // Handle two letter atoms
-                    if let Some(Element::Atom(last)) = stack.last_mut() {
+                    if let Some(Element::Atom(last)) = elems.last_mut() {
                         last.push(symbol);
                     } else {
                         return Err(ParseError::InvalidAtomName);
@@ -79,24 +108,29 @@ pub fn parse_molecule(s: &str) -> Result<Molecule, ParseError> {
             // Handle numbers
             _ if symbol.is_ascii_digit() => {
                 let digit = symbol.to_digit(10).unwrap() as usize;
-                if let Some(Element::Count(last)) = stack.last_mut() {
+                if let Some(Element::Count(last)) = elems.last_mut() {
                     *last *= 10;
                     *last += digit;
                 } else {
-                    stack.push(Element::Count(digit))
+                    elems.push(Element::Count(digit))
                 }
             }
 
             // Handle brackets
-            '(' | '[' | '{' => stack.push(Element::OpenBracket(symbol)),
-            ')' | ']' | '}' => stack.push(Element::CloseBracket(symbol)),
+            '(' | '[' | '{' => elems.push(Element::OpenBracket(symbol)),
+            ')' | ']' | '}' => elems.push(Element::CloseBracket(symbol)),
 
             // No other tokens are valid
             _ => return Err(ParseError::UnsupportedToken),
         }
     }
 
-    let mut counts = count_atoms(&mut stack);
+    Ok(elems)
+}
+
+pub fn parse_molecule(s: &str) -> Result<Molecule, ParseError> {
+    let mut elems = tokenize(s)?;
+    let mut counts = count_atoms(&mut elems)?;
     Ok(counts.drain().collect())
 }
 
