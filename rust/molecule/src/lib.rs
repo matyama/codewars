@@ -6,56 +6,103 @@ pub type Molecule = Vec<Atom>;
 #[derive(Debug)]
 pub enum ParseError {
     InvalidAtomName,
+    UnsupportedToken,
 }
 
-fn is_lower_alpha(c: &char) -> bool {
-    c.is_alphabetic() && c.is_lowercase()
+#[derive(Debug)]
+enum Element {
+    Atom(String),
+    Count(usize),
+    OpenBracket(char),
+    CloseBracket(char),
 }
 
-fn is_upper_alpha(s: &str) -> bool {
-    s.chars().all(|c| c.is_alphabetic() && c.is_uppercase())
-}
+fn count_atoms(elems: &mut Vec<Element>) -> HashMap<String, usize> {
+    let mut atom_counts = HashMap::new();
+    let mut counts: Vec<usize> = Vec::new();
 
-fn is_number(s: &str) -> bool {
-    s.chars().all(|c| c.is_ascii_digit())
+    println!("{:?}", elems);
+
+    while let Some(last) = elems.pop() {
+        let mut cnt: Option<usize> = None;
+        println!("elem: {:?}\tcnt: {:?}\tcounts: {:?}", last, cnt, counts);
+        match last {
+            Element::Count(n) => {
+                cnt = Some(counts.last().map(|c| c * n).unwrap_or(n));
+                println!("new count: {:?}", cnt);
+            }
+            Element::Atom(name) => {
+                let count = cnt.or(counts.last().cloned()).unwrap_or(1);
+                // FIXME: cnt update does not carry through
+                println!("updating {} with {}, cnt: {:?}", name, count, cnt);
+                *atom_counts.entry(name).or_default() += count;
+            }
+            Element::OpenBracket(bracket) => {
+                if let Some(c) = cnt {
+                    // TODO: push (c, closing_bracket)
+                    counts.push(c);
+                }
+            }
+            Element::CloseBracket(bracket) => {
+                // TODO: checks that
+                //  1. there is still some element to pop
+                //  2. that the bracket type matches -> (mul, expected)
+                counts.pop();
+                cnt = None;
+            }
+        }
+    }
+
+    atom_counts
 }
 
 pub fn parse_molecule(s: &str) -> Result<Molecule, ParseError> {
-    let mut molecule = HashMap::new();
-    let mut stack: Vec<String> = Vec::new();
+    let mut stack: Vec<Element> = Vec::new();
 
     for symbol in s.chars() {
         match symbol {
-            // Handle two letter atoms
-            _ if is_lower_alpha(&symbol) => match stack.last_mut() {
-                Some(last) if is_upper_alpha(&last) => {
-                    last.push(symbol);
+            // Handle atoms
+            _ if symbol.is_alphabetic() => {
+                if symbol.is_uppercase() {
+                    // Create new atom
+                    stack.push(Element::Atom(symbol.to_string()));
+                } else {
+                    // Handle two letter atoms
+                    if let Some(Element::Atom(last)) = stack.last_mut() {
+                        last.push(symbol);
+                    } else {
+                        return Err(ParseError::InvalidAtomName);
+                    }
                 }
-                _ => return Err(ParseError::InvalidAtomName),
-            },
+            }
 
             // Handle numbers
-            _ if symbol.is_ascii_digit() => match stack.last_mut() {
-                Some(last) if is_number(&last) => {
-                    last.push(symbol);
+            _ if symbol.is_ascii_digit() => {
+                let digit = symbol.to_digit(10).unwrap() as usize;
+                if let Some(Element::Count(last)) = stack.last_mut() {
+                    *last *= 10;
+                    *last += digit;
+                } else {
+                    stack.push(Element::Count(digit))
                 }
-                _ => stack.push(symbol.to_string()),
-            },
-
-            _ => {
-                stack.push(symbol.to_string());
             }
-        }
 
-        println!("{:?}", stack);
+            // Handle brackets
+            '(' | '[' | '{' => stack.push(Element::OpenBracket(symbol)),
+            ')' | ']' | '}' => stack.push(Element::CloseBracket(symbol)),
+
+            // No other tokens are valid
+            _ => return Err(ParseError::UnsupportedToken),
+        }
     }
 
-    Ok(molecule.drain().collect())
+    let mut counts = count_atoms(&mut stack);
+    Ok(counts.drain().collect())
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{parse_molecule, Molecule};
+    use super::*;
 
     macro_rules! assert_parse {
         ($formula:expr, $expected:expr, $name:ident) => {
