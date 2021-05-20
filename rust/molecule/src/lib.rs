@@ -13,8 +13,8 @@ pub enum ParseError {
 enum Element {
     Atom(String),
     Count(usize),
-    OpenBracket(char),
-    CloseBracket(char),
+    OpenBracket,
+    CloseBracket,
 }
 
 enum Count {
@@ -31,15 +31,15 @@ impl From<&Count> for usize {
     }
 }
 
-fn count_atoms(elems: &mut Vec<Element>) -> Result<HashMap<String, usize>, ParseError> {
+fn count_atoms(elems: &mut Vec<Element>) -> Molecule {
     let mut counts = HashMap::new();
-    let mut multipliers: Vec<(usize, char)> = Vec::new();
+    let mut multipliers: Vec<usize> = Vec::new();
     let mut cnt: Option<Count> = None;
 
     while let Some(last) = elems.pop() {
         match last {
             Element::Count(n) => {
-                let count = multipliers.last().map_or(n, |(m, _)| m * n);
+                let count = multipliers.last().map_or(n, |m| m * n);
                 let count = if let Some(Element::Atom(_)) = elems.last() {
                     Count::Atom(count)
                 } else {
@@ -48,7 +48,7 @@ fn count_atoms(elems: &mut Vec<Element>) -> Result<HashMap<String, usize>, Parse
                 cnt = Some(count);
             }
             Element::Atom(name) => {
-                let last_cnt = multipliers.last().map(|(c, _)| c).cloned();
+                let last_cnt = multipliers.last().cloned();
                 let count = match cnt {
                     Some(Count::Atom(count)) => {
                         // Retrack to the last multiplier when accounted for
@@ -61,32 +61,25 @@ fn count_atoms(elems: &mut Vec<Element>) -> Result<HashMap<String, usize>, Parse
                 };
                 *counts.entry(name).or_default() += count;
             }
-            Element::CloseBracket(bracket) => {
+            Element::CloseBracket => {
                 if let Some(ref count) = cnt {
-                    // Record expected reverse bracket
-                    let open_bracket = match bracket {
-                        ')' => '(',
-                        ']' => '[',
-                        '}' => '{',
-                        _ => unreachable!("No other brackets are allowed"),
-                    };
-                    multipliers.push((count.into(), open_bracket));
+                    multipliers.push(count.into());
                 }
             }
-            Element::OpenBracket(bracket) => match multipliers.pop() {
-                Some((_, expected)) if bracket == expected => {
+            Element::OpenBracket => {
+                if multipliers.pop().is_some() {
                     cnt = None;
                 }
-                _ => return Err(ParseError::MismatchedBrackets),
-            },
+            }
         }
     }
 
-    Ok(counts)
+    counts.drain().collect()
 }
 
 fn tokenize(molecule: &str) -> Result<Vec<Element>, ParseError> {
     let mut elems: Vec<Element> = Vec::new();
+    let mut brackets: Vec<char> = Vec::new();
 
     for symbol in molecule.chars() {
         match symbol {
@@ -117,21 +110,39 @@ fn tokenize(molecule: &str) -> Result<Vec<Element>, ParseError> {
             }
 
             // Handle brackets
-            '(' | '[' | '{' => elems.push(Element::OpenBracket(symbol)),
-            ')' | ']' | '}' => elems.push(Element::CloseBracket(symbol)),
+            '(' | '[' | '{' => {
+                elems.push(Element::OpenBracket);
+                brackets.push(match symbol {
+                    '(' => ')',
+                    '[' => ']',
+                    '{' => '}',
+                    _ => unreachable!("Matched types exhausted"),
+                });
+            }
+
+            ')' | ']' | '}' => match brackets.pop() {
+                Some(expected) if symbol == expected => {
+                    elems.push(Element::CloseBracket);
+                }
+                _ => return Err(ParseError::MismatchedBrackets),
+            },
 
             // No other tokens are valid
             _ => return Err(ParseError::UnsupportedToken),
         }
     }
 
-    Ok(elems)
+    if brackets.is_empty() {
+        Ok(elems)
+    } else {
+        Err(ParseError::MismatchedBrackets)
+    }
 }
 
 pub fn parse_molecule(s: &str) -> Result<Molecule, ParseError> {
     let mut elems = tokenize(s)?;
-    let mut counts = count_atoms(&mut elems)?;
-    Ok(counts.drain().collect())
+    let counts = count_atoms(&mut elems);
+    Ok(counts)
 }
 
 #[cfg(test)]
@@ -160,6 +171,22 @@ mod tests {
             "K4[ON(SO3)2]2",
             [("K", 4), ("O", 14), ("N", 2), ("S", 4)],
             fremys_salt
+        );
+        assert_parse!(
+            "(C5H5)Fe(CO)2CH3",
+            [("C", 8), ("H", 8), ("Fe", 1), ("O", 2)],
+            cyclopentadienyliron_dicarbonyl_dimer
+        );
+        assert_parse!(
+            "{[Co(NH3)4(OH)2]3Co}(SO4)3",
+            [("Co", 4), ("N", 12), ("H", 42), ("O", 18), ("S", 3)],
+            hexol_sulphate
+        );
+        assert_parse!("[Es2]", [("Es", 2)], random);
+        assert_parse!(
+            "Rg25{{{[[Pb]20]2}18}}PrBe21Cf",
+            [("Rg", 25), ("Pb", 720), ("Pr", 1), ("Be", 21), ("Cf", 1)],
+            random_nested
         );
     }
 
