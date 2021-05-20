@@ -5,6 +5,7 @@
 
 ## 5 kyu
 * [Best travel](https://www.codewars.com/kata/55e7280b40e1c4a06d0000aa)
+* [Graph-like Sequence](https://www.codewars.com/kata/60815326bbb0150009f55f7e/rust)
 * [Molecule to atoms](https://www.codewars.com/kata/52f831fa9d332c6591000511)
 * [Perimeter of squares in a rectangle](https://www.codewars.com/kata/559a28007caad2ac4e000083)
 * [Product of consecutive Fib numbers](https://www.codewars.com/kata/5541f58a944b85ce6d00006a)

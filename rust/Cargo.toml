@@ -13,6 +13,7 @@ members = [
     "persistent-bugger",
     "population-growth",
     "product-fib",
+    "simple-graph",
     "snail",
 ]
 
