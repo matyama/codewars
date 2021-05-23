@@ -1,25 +1,50 @@
-use std::cmp::min;
+use std::cmp::max;
 
-/// Resources on the Graph Realization Problem:
-///  - https://en.wikipedia.org/wiki/Graph_realization_problem
-///  - https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93Gallai_theorem
+/// Solves the Graph Realization Problem:
+///  - Implements the Erdős-Gallai approach in `O(n*log(n))` time:
+///  http://compalg.inf.elte.hu/~tony/Kutatas/EGHH/Comb-IvanyiLucz-23Nov.pdf
+///  - Note that with better sorting procedure (e.g. *Radix Sort*) the time
+///  complexity can be reduced to linear
 pub fn solution(degrees: Vec<usize>) -> bool {
-    // Sort the degrees in non-increasing order
     let mut degrees = degrees;
-    degrees.sort_by(|x, y| y.cmp(x));
 
     let n = degrees.len();
 
-    // Graph with an odd sum of degrees cannot be simple
-    if degrees.iter().sum::<usize>() % 2 != 0 {
+    // Sort the degrees in non-increasing order
+    // TODO: Use a Radix Sort to reduce time complexity to linear
+    degrees.sort_by(|x, y| y.cmp(x));
+
+    // Compute cumulative sum of vertex degrees
+    let deg_sums: Vec<usize> = degrees
+        .iter()
+        .scan(0, |cumsum, &d| {
+            *cumsum += d;
+            Some(*cumsum)
+        })
+        .collect();
+
+    // Total sum of vertex degrees
+    let deg_sum = deg_sums.last().cloned().unwrap_or_default();
+
+    // Parity test: Graph with an odd sum of degrees cannot be simple
+    if deg_sum % 2 != 0 {
         return false;
     }
 
     // Validate n inequalities which are necessary for a graph to be simple
-    for k in 0..n {
-        let sum_k: usize = degrees[..=k].iter().sum();
-        let sum_n: usize = degrees[(k + 1)..].iter().map(|&d| min(d, k + 1)).sum();
-        if sum_k > k * (k + 1) + sum_n {
+    let mut w = n.saturating_sub(1);
+    for i in 0..n {
+        // Find current weight point
+        while degrees[w] <= i {
+            if w == 0 {
+                break;
+            }
+            w -= 1;
+        }
+        // Find current cutting point
+        let y = max(i, w);
+        // Degree test
+        if deg_sums[i] > (i + 1) * y + deg_sum - deg_sums[y] {
             return false;
         }
     }
