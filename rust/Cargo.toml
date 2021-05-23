@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "algebraic-lists",
     "best-travel",
     "bouncing-balls",
     "caa-stats",

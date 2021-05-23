@@ -1,6 +1,7 @@
 # Rust Katas
 
 ## 4 kyu
+* [Algebraic Lists](https://www.codewars.com/kata/529a92d9aba78c356b000353)
 * [Snail](https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1)
 
 ## 5 kyu
