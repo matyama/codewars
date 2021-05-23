@@ -2,6 +2,7 @@
 
 ## 4 kyu
 * [Algebraic Lists](https://www.codewars.com/kata/529a92d9aba78c356b000353)
+* [Magnet particles in boxes](https://www.codewars.com/kata/56c04261c3fcf33f2d000534)
 * [Snail](https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1)
 * [Validate Sudoku with size `NxN`](https://www.codewars.com/kata/540afbe2dc9f615d5e000425)
 
