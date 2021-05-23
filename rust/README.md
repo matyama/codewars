@@ -3,6 +3,7 @@
 ## 4 kyu
 * [Algebraic Lists](https://www.codewars.com/kata/529a92d9aba78c356b000353)
 * [Snail](https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1)
+* [Validate Sudoku with size `NxN`](https://www.codewars.com/kata/540afbe2dc9f615d5e000425)
 
 ## 5 kyu
 * [Best travel](https://www.codewars.com/kata/55e7280b40e1c4a06d0000aa)

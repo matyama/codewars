@@ -1,0 +1,11 @@
+[package]
+name = "validate-sudoku"
+description = "https://www.codewars.com/kata/540afbe2dc9f615d5e000425"
+homepage = "https://github.com/matyama/codewars"
+readme = "../README.md"
+version = "0.1.0"
+authors = ["Martin Matyášek <martin.matyasek@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+itertools = "0.10.0"

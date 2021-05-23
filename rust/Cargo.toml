@@ -16,5 +16,6 @@ members = [
     "product-fib",
     "simple-graph",
     "snail",
+    "validate-sudoku",
 ]
 
