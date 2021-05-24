@@ -8,6 +8,7 @@ members = [
     "delete-nth",
     "dubstep",
     "in-array",
+    "integer-partitions",
     "magnet-particles",
     "molecule",
     "parts-sums",
