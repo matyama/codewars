@@ -15,6 +15,7 @@ members = [
     "perimeter",
     "persistent-bugger",
     "population-growth",
+    "prime-factors",
     "product-fib",
     "simple-graph",
     "snail",

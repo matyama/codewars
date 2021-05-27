@@ -5,6 +5,7 @@
 * [Getting along with Integer Partitions](https://www.codewars.com/kata/55cf3b567fc0e02b0b00000b)
 * [Magnet particles in boxes](https://www.codewars.com/kata/56c04261c3fcf33f2d000534)
 * [Snail](https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1)
+* [Sum by Factors](https://www.codewars.com/kata/54d496788776e49e6b00052f)
 * [Validate Sudoku with size `NxN`](https://www.codewars.com/kata/540afbe2dc9f615d5e000425)
 
 ## 5 kyu
