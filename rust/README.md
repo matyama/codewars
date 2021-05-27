@@ -1,4 +1,4 @@
-# Rust Katas
+# Rust Kata
 
 ## 4 kyu
 * [Algebraic Lists](https://www.codewars.com/kata/529a92d9aba78c356b000353)

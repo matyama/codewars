@@ -1,4 +1,4 @@
-# Python Katas
+# Python Kata
 
 ## 2 kyu
 * [Symbolic differentiation of prefix expressions](https://www.codewars.com/kata/584daf7215ac503d5a0001ae)
