@@ -1,3 +1,5 @@
+[![Codewars](https://github.com/matyama/codewars/actions/workflows/codewars.yml/badge.svg)](https://github.com/matyama/codewars/actions/workflows/codewars.yml)
+
 # Codewars
 Solutions of [Codewars](https://codewars.com/) Kata
 
