@@ -1,0 +1,35 @@
+name:                haskell
+version:             0.1.0.0
+github:              "matyama/codewars/haskell"
+license:             BSD3
+author:              "Martin Matyášek"
+maintainer:          "martin.matyasek@gmail.com"
+copyright:           "Copyright (c) 2021 Martin Matyášek"
+
+extra-source-files:
+- README.md
+
+synopsis:            Solutions of Haskell versions of Codewars Kata
+category:            Learning Haskell
+
+description:         Please see the README on GitHub at <https://github.com/matyama/codewars/haskell#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- split
+
+library:
+  source-dirs: src
+
+tests:
+  haskell-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - haskell
+    - hspec
+    - QuickCheck

@@ -1,0 +1,6 @@
+# Current Codewars environment uses ghc-8.8.4, hence this LTS version
+# See https://www.stackage.org/
+resolver: lts-16.31
+
+packages:
+- .
