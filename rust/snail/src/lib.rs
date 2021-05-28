@@ -1,3 +1,4 @@
+#[allow(clippy::clippy::needless_range_loop)]
 pub fn snail(matrix: &[Vec<i32>]) -> Vec<i32> {
     let n = matrix.first().map(Vec::len).unwrap_or_default();
 

@@ -22,6 +22,7 @@ impl<T: Clone> Cons<T> {
 }
 
 impl<T: Clone> Cons<T> {
+    #[allow(clippy::should_implement_trait)]
     pub fn from_iter<I>(it: I) -> Self
     where
         I: IntoIterator<Item = T>,

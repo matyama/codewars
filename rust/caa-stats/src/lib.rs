@@ -50,7 +50,7 @@ mod tests {
         println!("expect:\n{:?};", exp);
         println!(" {};", ans == exp);
         assert_eq!(ans, exp);
-        println!("{};", "-");
+        println!("-;");
     }
 
     #[test]

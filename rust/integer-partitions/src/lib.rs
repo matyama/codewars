@@ -51,7 +51,7 @@ pub fn part(n: i64) -> String {
 
     // Collect and sort the products for median
     let mut prods: Vec<i64> = prods.into_iter().collect();
-    prods.sort();
+    prods.sort_unstable();
 
     let n_prods = prods.len();
 
