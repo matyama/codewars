@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c5e5e1911274b90f2ab2234ea26c06078379e53d35c7ad257385263bd71d4bd1
+-- hash: 9224842d157b52c61e260839a405c07203cb2bb95dee53c3c8ca1e9369df7f44
 
 name:           haskell
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
       HighestScoringWord
       Longestconsec
       Maskify
+      Narcissistic
       Square
   other-modules:
       Paths_haskell
@@ -51,6 +52,7 @@ test-suite haskell-test
       HighestScoringWordSpec
       LongestconsecSpec
       MaskifySpec
+      NarcissisticSpec
       SquareSpec
       Paths_haskell
   hs-source-dirs:
