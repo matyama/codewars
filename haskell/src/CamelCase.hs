@@ -6,7 +6,7 @@ import Data.List.Split
 
 capitalize :: String -> String
 capitalize [] = []
-capitalize (h:t) = (toUpper h) : t
+capitalize (h:t) = toUpper h : t
 
 delimiter :: String -> Maybe String
 delimiter [] = Nothing 
@@ -19,5 +19,5 @@ toWords str Nothing = [str]
 toWords str (Just d) = splitOn d str
 
 toCamelCase :: String -> String
-toCamelCase str = firstWord ++ (concatMap capitalize otherWords)
+toCamelCase str = firstWord ++ concatMap capitalize otherWords
   where (firstWord:otherWords) = toWords str (delimiter str)

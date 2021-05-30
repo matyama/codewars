@@ -11,8 +11,8 @@ longestConsec strarr k
  
 consecutiveStrings:: [String] -> Int -> [[String]]
 consecutiveStrings list@(_:tail) k 
-  | length list == k = (window:[])
-  | otherwise = (window:rest)
+  | length list == k = [window]
+  | otherwise = window:rest
   where window = take k list
         rest = consecutiveStrings tail k 
 consecutiveStrings _ _ = []
