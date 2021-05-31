@@ -20,17 +20,16 @@ pickPeaks :: [Int] -> PickedPeaks
 pickPeaks values = mconcat $ findPeaks values 0 0
 
 findPeaks :: [Int] -> Int -> Int -> [PickedPeaks]
-findPeaks []           _ _ = []
-findPeaks (_     : []) _ _ = []
-findPeaks (_ : _ : []) _ _ = []
-findPeaks (left : mid : right : []) x i
-  | left == mid  = []
-  | mid == right = []
-  | otherwise    = [peak (x + 1) left mid right]
+findPeaks []     _ _ = []
+findPeaks [_]    _ _ = []
+findPeaks [_, _] _ _ = []
+findPeaks [left, mid, right] x i | left == mid  = []
+                                 | mid == right = []
+                                 | otherwise    = [peak (x + 1) left mid right]
 findPeaks (left : mid : right : tail) x i
-  | left == mid = findPeaks (mid : right : tail) x (i + 1)
+  | left == mid = findPeaks (mid : right : tail) (x + 1) (i + 1)
   | mid == right = findPeaks (left : right : tail) x (i + 1)
-  | otherwise = (peak (x + 1) left mid right)
+  | otherwise = peak (x + 1) left mid right
   : findPeaks (mid : right : tail) (i + 1) (i + 1)
 
 peak :: Int -> Int -> Int -> Int -> PickedPeaks
