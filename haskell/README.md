@@ -1,6 +1,7 @@
 # Haskell Kata
 
 ## 5 kyu
+* [Don't Drink the Water](https://www.codewars.com/kata/562e6df5cf2d3908ad00019e)
 * [Pick peaks](https://www.codewars.com/kata/5279f6fe5ab7f447890006a7)
 
 ## 6 kyu
