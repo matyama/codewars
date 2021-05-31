@@ -1,12 +1,14 @@
-module CamelCaseSpec (spec) where
+module CamelCaseSpec
+  ( spec
+  ) where
 
-import CamelCase (toCamelCase)
-import Test.Hspec
+import           CamelCase                      ( toCamelCase )
+import           Test.Hspec
 
 main = hspec spec
 spec = do
   describe "toCamelCase" $ do
     it "should work for some examples" $ do
-      toCamelCase "the_stealth_warrior" `shouldBe` "theStealthWarrior" 
+      toCamelCase "the_stealth_warrior" `shouldBe` "theStealthWarrior"
       toCamelCase "The-Stealth-Warrior" `shouldBe` "TheStealthWarrior"
       toCamelCase "tdzd" `shouldBe` "tdzd"
