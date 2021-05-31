@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 550b53169cfcb30444e9e79a4bb877bd6a3b73a602a3819eca432d7a78c6b8c0
+-- hash: d883d95b233b5ddcfa9bdf1cb591a0cd1ee3d8efddadf824e473d803161e8b33
 
 name:           haskell
 version:        0.1.0.0
@@ -30,6 +30,7 @@ source-repository head
 library
   exposed-modules:
       CamelCase
+      Dups
       HighestScoringWord
       Longestconsec
       Maskify
@@ -50,6 +51,7 @@ test-suite haskell-test
   main-is: Spec.hs
   other-modules:
       CamelCaseSpec
+      DupsSpec
       HighestScoringWordSpec
       LongestconsecSpec
       MaskifySpec
