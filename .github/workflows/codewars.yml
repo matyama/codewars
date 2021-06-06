@@ -16,17 +16,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Cache Stack project
+        uses: actions/cache@v2
+        with:
+          path: .stack-work
+          key: ${{ runner.os }}-cache-stack-work-${{ hashFiles('package.yaml','stack.yml','.github/workflows/codewars.yml') }}
+      - name: Cache Stack
+        uses: actions/cache@v2
+        with:
+          path: .stack
+          key: ${{ runner.os }}-cache-stack-${{ hashFiles('stack.yml','.github/workflows/codewars.yml') }}
       - name: Setup Haskell Stack
         uses: haskell/actions/setup@v1
         with:
           enable-stack: true
           stack-no-global: true
           stack-version: latest
-      - name: Cache Stack project
-        uses: actions/cache@v2
-        with:
-          path: .stack-work
-          key: ${{ runner.os }}-cache-stack-work-${{ hashFiles('package.yaml','stack.yml','.github/workflows/codewars.yml') }}
       - name: Install dependencies
         run: make setup-dev
       - name: Build
