@@ -22,7 +22,12 @@ jobs:
           enable-stack: true
           stack-no-global: true
           stack-version: latest
-      - name: Install dev dependencies
+      - name: Cache Stack project
+        uses: actions/cache@v2
+        with:
+          path: .stack-work
+          key: ${{ runner.os }}-cache-stack-work-${{ hashFiles('package.yaml','stack.yml','.github/workflows/codewars.yml') }}
+      - name: Install dependencies
         run: make setup-dev
       - name: Build
         run: make build
