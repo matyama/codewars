@@ -2,5 +2,8 @@
 # See https://www.stackage.org/
 resolver: lts-16.31
 
+ghc-options:
+  haskell: -Wno-type-defaults
+
 packages:
 - .

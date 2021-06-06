@@ -22,10 +22,14 @@ jobs:
           enable-stack: true
           stack-no-global: true
           stack-version: latest
+      - name: Install dev dependencies
+        run: make setup-dev
       - name: Build
-        run: stack build --test --no-run-tests
+        run: make build
       - name: Run tests
-        run: stack test --coverage
+        run: make test
+      - name: Run lints
+        run: make lint
   
   python:
     runs-on: ubuntu-latest

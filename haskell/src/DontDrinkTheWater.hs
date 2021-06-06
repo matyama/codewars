@@ -4,7 +4,6 @@ module DontDrinkTheWater
 
 
 import           Data.List.Split                ( chunksOf )
-import           Data.Tuple                     ( swap )
 
 separateLiquids :: [[Char]] -> [[Char]]
 separateLiquids []    = []

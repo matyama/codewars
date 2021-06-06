@@ -5,7 +5,7 @@ module CamelCaseSpec
 import           CamelCase                      ( toCamelCase )
 import           Test.Hspec
 
-main = hspec spec
+spec :: SpecWith ()
 spec = do
   describe "toCamelCase" $ do
     it "should work for some examples" $ do

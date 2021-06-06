@@ -4,7 +4,6 @@ module LongestconsecSpec
 
 import           Longestconsec                  ( longestConsec )
 import           Test.Hspec
-import           Test.QuickCheck
 import           Text.Printf                    ( printf )
 
 testLong :: [String] -> Int -> String -> Spec
@@ -13,7 +12,7 @@ testLong arrs k u =
     $          longestConsec arrs k
     `shouldBe` u
 
-main = hspec spec
+spec :: SpecWith ()
 spec = do
 
   describe "longestConsec" $ do

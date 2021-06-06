@@ -6,8 +6,8 @@ import           Data.Ord                       ( comparing )
 
 high :: String -> String
 high ""  = ""
-high str = maximumBy (comparing score) $ reverse words
-  where words = splitOn " " str
+high str = maximumBy (comparing score) $ reverse words'
+  where words' = splitOn " " str
 
 score :: String -> Int
 score "" = 0

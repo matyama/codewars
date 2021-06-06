@@ -1,7 +1,6 @@
 module CamelCase where
 
 import           Data.Char
-import           Data.List
 import           Data.List.Split
 
 capitalize :: String -> String
