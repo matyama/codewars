@@ -23,13 +23,15 @@ jobs:
           stack-no-global: true
           stack-version: latest
       - name: Cache Stack
+        id: cache-stack
         uses: actions/cache@v2
         with:
           path: |
             ~/.stack
             **/.stack-work
-          key: ${{ runner.os }}-cache-stack-${{ github.ref }}-${{ github.run_id }}-${{ hashFiles('**/package.yaml', '**/stack.yaml') }}
+          key: cache-stack-${{ hashFiles('**/package.yaml', '**/stack.yaml', '**/dependencies.dev') }}
       - name: Install dependencies
+        if: ${{ !steps.cache-stack.outputs.cache-hit }}
         run: make setup-dev
       - name: Build
         run: make build
