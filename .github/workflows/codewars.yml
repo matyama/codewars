@@ -16,19 +16,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Cache Stack
-        uses: actions/cache@v2
-        with:
-          path: |
-            .stack
-            .stack-work
-          key: ${{ runner.os }}-cache-stack-${{ hashFiles('package.yaml','stack.yml') }}
       - name: Setup Haskell Stack
         uses: haskell/actions/setup@v1
         with:
           enable-stack: true
           stack-no-global: true
           stack-version: latest
+      - name: Cache Stack
+        uses: actions/cache@v2
+        with:
+          path: |
+            .stack
+            **/.stack-work
+          key: ${{ runner.os }}-cache-stack-${{ hashFiles('**/package.yaml', '**/stack.yaml') }}
       - name: Install dependencies
         run: make setup-dev
       - name: Build
