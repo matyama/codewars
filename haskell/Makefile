@@ -20,7 +20,7 @@ setup:
 	stack build --dependencies-only --test --no-run-tests
 
 setup-dev:
-	stack install --copy-compiler-tool brittany hlint
+	stack install brittany hlint
 
 test:
 	stack build --coverage --fast --pedantic --test
