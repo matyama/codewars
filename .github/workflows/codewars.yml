@@ -26,9 +26,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            .stack
+            ~/.stack
             **/.stack-work
-          key: ${{ runner.os }}-cache-stack-${{ hashFiles('**/package.yaml', '**/stack.yaml') }}
+          key: ${{ runner.os }}-cache-stack-${{ github.ref }}-${{ github.run_id }}-${{ hashFiles('**/package.yaml', '**/stack.yaml') }}
       - name: Install dependencies
         run: make setup-dev
       - name: Build
