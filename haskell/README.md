@@ -2,6 +2,7 @@
 
 ## 5 kyu
 * [Don't Drink the Water](https://www.codewars.com/kata/562e6df5cf2d3908ad00019e)
+* [Josephus Permutation](https://www.codewars.com/kata/5550d638a99ddb113e0000a2)
 * [Pick peaks](https://www.codewars.com/kata/5279f6fe5ab7f447890006a7)
 
 ## 6 kyu

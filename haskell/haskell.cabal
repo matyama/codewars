@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 61452ee6a49dc779097bf28fdbe27967146c7166f4d3a49b418e29b24c191324
+-- hash: 0c36d524a1afe01645884f8275e2517e1d70944c3de1765d05420e9aadbef4fe
 
 name:           haskell
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
       DontDrinkTheWater
       Dups
       HighestScoringWord
+      Josephus
       Longestconsec
       Maskify
       Narcissistic
@@ -55,6 +56,7 @@ test-suite haskell-test
       DontDrinkTheWaterSpec
       DupsSpec
       HighestScoringWordSpec
+      JosephusSpec
       LongestconsecSpec
       MaskifySpec
       NarcissisticSpec
