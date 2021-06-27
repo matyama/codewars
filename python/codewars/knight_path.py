@@ -1,7 +1,7 @@
 import itertools
 import sys
 from heapq import heappop, heappush
-from typing import Dict, Iterable, List, NamedTuple, Tuple
+from typing import Dict, Iterable, List, NamedTuple, Tuple, cast
 
 COL_IX = {col: i for i, col in enumerate('abcdefgh')}
 
@@ -72,7 +72,7 @@ def knight(src: str, dst: str) -> int:
             if pos is not None:
                 # Pop first non-deprecated item
                 del pq_entries[pos]
-                return pos
+                return cast(Position, pos)
         raise KeyError('Priority queue is empty')
 
     # Dijkstra's SP / Uniform-Cost Search

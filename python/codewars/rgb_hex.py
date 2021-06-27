@@ -1,3 +1,6 @@
 def rgb(r: int, g: int, b: int) -> str:
-    clip = lambda v: max(0, min(255, v))  # noqa: E731
     return '%02X' * 3 % (clip(r), clip(g), clip(b))
+
+
+def clip(v: int, low: int = 0, high: int = 255) -> int:
+    return max(low, min(high, v))
