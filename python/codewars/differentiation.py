@@ -206,6 +206,12 @@ class Sub(Add, op="-"):
     def _eval(cls, x: Const, y: Const) -> Const:
         return Const(x.value - y.value)
 
+    @classmethod
+    def _apply(cls, arg1: Expr, arg2: Expr) -> Expr:
+        if isinstance(arg2, Const) and arg2.value == 0:
+            return arg1
+        return cls(arg1, arg2)
+
 
 @dataclass(frozen=True)
 class Mul(Binary, op="*"):
