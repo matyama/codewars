@@ -291,7 +291,7 @@ impl Display for Expr {
     }
 }
 
-// Expression arithmetics
+// Expression algebra
 //  - Operations on expression refs additionally simplify (reduce) resulting expressions
 
 impl Neg for ExprRc {
