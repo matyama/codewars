@@ -6,6 +6,7 @@ members = [
     "caa-stats",
     "count-duplicates",
     "delete-nth",
+    "differentiation",
     "dubstep",
     "in-array",
     "integer-partitions",
