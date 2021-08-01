@@ -136,7 +136,7 @@ impl FromStr for Expr {
         let expr = if s.starts_with('(') {
             &s[1..s.len() - 1]
         } else {
-            &s[..]
+            s
         };
 
         // Split expressions like `+ 1 2` or `sin x` to (operator, arguments)
@@ -193,7 +193,7 @@ impl Diff for FuncExpr {
         let df = match self.f {
             Sin => self.with(Cos),
             Cos => -self.with(Sin),
-            Tan => Self::OutExpr::from(1) / (self.with(Cos) ^ 2.into()).into(),
+            Tan => Self::OutExpr::from(1) / (self.with(Cos) ^ 2.into()),
             Exp => self.into(),
             Ln => Self::OutExpr::from(1) / self.arg.clone().into(),
         };
@@ -340,9 +340,9 @@ impl Mul for ExprRc {
         use Expr::*;
         // TODO: can we do without shellow copy of y and x?
         match (self.0.borrow(), rhs.0.borrow()) {
-            (Const(x), _) if *x == 1.0 => rhs,
+            (Const(x), _) if (x - 1.0).abs() < f64::EPSILON => rhs,
             (Const(x), _) if *x == 0.0 => 0.into(),
-            (_, Const(y)) if *y == 1.0 => self,
+            (_, Const(y)) if (y - 1.0).abs() < f64::EPSILON => self,
             (_, Const(y)) if *y == 0.0 => 0.into(),
             // TODO: is `div.rhs.clone()` necessary when we take ownership of `self`/`rhs`
             (Const(x), Binary(div)) if div.op == Op::Div => {
@@ -392,7 +392,7 @@ impl BitXor for ExprRc {
         use Expr::*;
         match (self.0.borrow(), rhs.0.borrow()) {
             (_, Const(c)) if *c == 0.0 => 1.into(),
-            (_, Const(c)) if *c == 1.0 => self,
+            (_, Const(c)) if (c - 1.0).abs() < f64::EPSILON => self,
             (Const(x), Const(y)) => x.powf(*y).into(),
             _ => (Op::Pow, self.0, rhs.0).into(),
         }
@@ -404,6 +404,7 @@ impl BitXor for ExprRc {
 impl Shr for ExprRc {
     type Output = Self;
 
+    #[allow(clippy::suspicious_arithmetic_impl)]
     fn shr(self, rhs: Self) -> Self::Output {
         use Expr::*;
         match (self.borrow(), rhs.borrow()) {
