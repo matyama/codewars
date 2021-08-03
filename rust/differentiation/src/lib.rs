@@ -2,14 +2,12 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use std::{
     borrow::Borrow,
+    convert::{TryFrom, TryInto},
     fmt::{Display, Write},
     ops::{Add, BitXor, Deref, Div, Mul, Neg, Shr, Sub},
     rc::Rc,
     str::FromStr,
 };
-
-// TODO: get rid of this
-const BINARY_OPS: &str = &"+-*/^";
 
 pub fn diff(expr: &str) -> String {
     expr.parse::<Expr>()
@@ -47,10 +45,12 @@ struct FuncExpr {
     arg: Rc<Expr>,
 }
 
-// TODO: get rid of this
 impl FuncExpr {
     #[inline]
-    fn with(&self, f: Func) -> ExprRc {
+    fn with<E>(&self, f: Func) -> E
+    where
+        E: From<Self>,
+    {
         Self {
             f,
             arg: self.arg.clone(),
@@ -128,6 +128,30 @@ fn split_operands(args: &str) -> Option<(&str, &str)> {
     }
 }
 
+impl TryFrom<(&str, &str)> for OpExpr {
+    type Error = ();
+
+    fn try_from(value: (&str, &str)) -> Result<Self, Self::Error> {
+        let (lhs, rhs) = split_operands(value.1).ok_or(())?;
+        Ok(Self {
+            lhs: lhs.parse().map(Rc::new)?,
+            op: value.0.parse()?,
+            rhs: rhs.parse().map(Rc::new)?,
+        })
+    }
+}
+
+impl TryFrom<(&str, &str)> for FuncExpr {
+    type Error = ();
+
+    fn try_from(value: (&str, &str)) -> Result<Self, Self::Error> {
+        Ok(Self {
+            f: value.0.parse()?,
+            arg: value.1.parse().map(Rc::new)?,
+        })
+    }
+}
+
 impl FromStr for Expr {
     type Err = ();
 
@@ -140,23 +164,11 @@ impl FromStr for Expr {
         };
 
         // Split expressions like `+ 1 2` or `sin x` to (operator, arguments)
-        let expr = if let Some((op, args)) = expr.split_once(' ') {
-            // TODO: replace this check by chaining `parse`
-            if BINARY_OPS.contains(op) {
-                // Binary operation
-                let (lhs, rhs) = split_operands(args).ok_or(())?;
-                Self::Binary(OpExpr {
-                    lhs: lhs.parse().map(Rc::new)?,
-                    op: op.parse()?,
-                    rhs: rhs.parse().map(Rc::new)?,
-                })
-            } else {
-                // Unary function
-                Self::Unary(FuncExpr {
-                    f: op.parse()?,
-                    arg: args.parse().map(Rc::new)?,
-                })
-            }
+        let expr = if let Some(split) = expr.split_once(' ') {
+            split
+                .try_into()
+                .map(Self::Binary)
+                .or_else(|_| split.try_into().map(Self::Unary))?
         } else {
             // Constant or a variable
             expr.trim_start_matches('-')
@@ -192,8 +204,8 @@ impl Diff for FuncExpr {
         //  - maybe `impl Borrow<ExprRc> for FuncExpr` => probably not without copying
         let df = match self.f {
             Sin => self.with(Cos),
-            Cos => -self.with(Sin),
-            Tan => Self::OutExpr::from(1) / (self.with(Cos) ^ 2.into()),
+            Cos => -self.with::<Self::OutExpr>(Sin),
+            Tan => Self::OutExpr::from(1) / (self.with::<Self::OutExpr>(Cos) ^ 2.into()),
             Exp => self.into(),
             Ln => Self::OutExpr::from(1) / self.arg.clone().into(),
         };
@@ -212,7 +224,6 @@ impl Diff for OpExpr {
         use Op::*;
 
         // TODO: do i need all these clones?
-        // FIXME
         let lhs: &ExprRc = &self.lhs.clone().into();
         let rhs: &ExprRc = &self.rhs.clone().into();
 
@@ -312,8 +323,8 @@ impl Add for ExprRc {
     fn add(self, rhs: Self) -> Self::Output {
         use Expr::*;
         match (self.0.borrow(), rhs.0.borrow()) {
-            (_, Const(y)) if *y == 0.0 => self,
-            (Const(x), _) if *x == 0.0 => rhs,
+            (_, Const(y)) if approx!(y, 0) => self,
+            (Const(x), _) if approx!(x, 0) => rhs,
             (Const(x), Const(y)) => (x + y).into(),
             _ => (Op::Add, self.0, rhs.0).into(),
         }
@@ -326,7 +337,7 @@ impl Sub for ExprRc {
     fn sub(self, rhs: Self) -> Self::Output {
         use Expr::*;
         match (self.0.borrow(), rhs.0.borrow()) {
-            (_, Const(y)) if *y == 0.0 => self,
+            (_, Const(y)) if approx!(y, 0) => self,
             (Const(x), Const(y)) => (x - y).into(),
             _ => (Op::Sub, self.0, rhs.0).into(),
         }
@@ -338,30 +349,26 @@ impl Mul for ExprRc {
 
     fn mul(self, rhs: Self) -> Self::Output {
         use Expr::*;
-        // TODO: can we do without shellow copy of y and x?
+        // `if let` guards are still unstable in pattern matching: https://bit.ly/3f8ENRP
         match (self.0.borrow(), rhs.0.borrow()) {
-            (Const(x), _) if (x - 1.0).abs() < f64::EPSILON => rhs,
-            (Const(x), _) if *x == 0.0 => 0.into(),
-            (_, Const(y)) if (y - 1.0).abs() < f64::EPSILON => self,
-            (_, Const(y)) if *y == 0.0 => 0.into(),
-            // TODO: is `div.rhs.clone()` necessary when we take ownership of `self`/`rhs`
+            (Const(x), _) if approx!(x, 1) => rhs,
+            (Const(x), _) if approx!(x, 0) => 0.into(),
+            (_, Const(y)) if approx!(y, 1) => self,
+            (_, Const(y)) if approx!(y, 0) => 0.into(),
             (Const(x), Binary(div)) if div.op == Op::Div => {
-                // `box` and `if let` guards are still unstable in pattern matching
-                //  - https://bit.ly/3f8ENRP
                 if let Const(v) = *div.lhs {
+                    // TODO: can we do without shellow copy of y and x?
                     (Op::Div, Const(x * v).into(), div.rhs.clone()).into()
                 } else {
-                    (Op::Mul, Const(*x).into(), Binary(div.clone()).into()).into()
+                    (Op::Mul, Const(*x).into(), rhs.0).into()
                 }
             }
-            // TODO: make `(lhs @ Binary(...), rhs @ ...)` working
             (Binary(div), Const(y)) if div.op == Op::Div => {
-                // `box` and `if let` guards are still unstable in pattern matching
-                //  - https://bit.ly/3f8ENRP
                 if let Const(v) = *div.lhs {
+                    // TODO: can we do without shellow copy of y and x?
                     (Op::Div, Const(v * y).into(), div.rhs.clone()).into()
                 } else {
-                    (Op::Mul, Binary(div.clone()).into(), Const(*y).into()).into()
+                    (Op::Mul, self.0, Const(*y).into()).into()
                 }
             }
             (Const(x), Const(y)) => (x * y).into(),
@@ -376,8 +383,8 @@ impl Div for ExprRc {
     fn div(self, rhs: Self) -> Self::Output {
         use Expr::*;
         match (self.0.borrow(), rhs.0.borrow()) {
-            (Const(c), _) if *c == 0.0 => 0.into(),
-            (_, Const(c)) if *c == 0.0 => panic!("TODO: division by zero"),
+            (Const(c), _) if approx!(c, 0) => 0.into(),
+            (_, Const(c)) if approx!(c, 0) => panic!("division by zero"),
             (Const(x), Const(y)) => (x / y).into(),
             _ => (Op::Div, self.0, rhs.0).into(),
         }
@@ -391,8 +398,8 @@ impl BitXor for ExprRc {
     fn bitxor(self, rhs: Self) -> Self::Output {
         use Expr::*;
         match (self.0.borrow(), rhs.0.borrow()) {
-            (_, Const(c)) if *c == 0.0 => 1.into(),
-            (_, Const(c)) if (c - 1.0).abs() < f64::EPSILON => self,
+            (_, Const(c)) if approx!(c, 0) => 1.into(),
+            (_, Const(c)) if approx!(c, 1) => self,
             (Const(x), Const(y)) => x.powf(*y).into(),
             _ => (Op::Pow, self.0, rhs.0).into(),
         }
@@ -521,6 +528,18 @@ impl Deref for ExprRc {
     fn deref(&self) -> &Self::Target {
         self.borrow()
     }
+}
+
+// Utilities
+
+#[macro_export]
+macro_rules! approx {
+    ($x:ident, $y:expr, $eps:expr) => {
+        ($x - $y as f64).abs() < $eps
+    };
+    ($x:ident, $y:expr) => {
+        approx!($x, $y, f64::EPSILON)
+    };
 }
 
 #[cfg(test)]
