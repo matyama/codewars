@@ -78,8 +78,8 @@ enum Expr {
 struct ExprRc(Rc<Expr>);
 
 // Expression parsing implementations
+// TODO: Automatically derive string patterns from enum variants.
 
-// TODO: generalize (do not enumerate -> macro?)
 impl FromStr for Func {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -199,9 +199,6 @@ impl Diff for FuncExpr {
             return 0.into();
         }
 
-        // TODO: clean up all these `.clone().into()`
-        //
-        //  - maybe `impl Borrow<ExprRc> for FuncExpr` => probably not without copying
         let df = match self.f {
             Sin => self.with(Cos),
             Cos => -self.with::<Self::OutExpr>(Sin),
@@ -223,27 +220,37 @@ impl Diff for OpExpr {
         use Func::*;
         use Op::*;
 
-        // TODO: do i need all these clones?
-        let lhs: &ExprRc = &self.lhs.clone().into();
-        let rhs: &ExprRc = &self.rhs.clone().into();
+        let f: ExprRc = self.lhs.clone().into();
+        let g: ExprRc = self.rhs.clone().into();
 
         match self.op {
-            Add => lhs.diff() + rhs.diff(),
-            Sub => lhs.diff() - rhs.diff(),
-            Mul => (lhs.diff() * rhs.clone()) + (lhs.clone() * rhs.diff()),
+            Add => {
+                let df = (&f).diff();
+                let dg = (&g).diff();
+                df + dg
+            }
+            Sub => {
+                let df = (&f).diff();
+                let dg = (&g).diff();
+                df - dg
+            }
+            Mul => {
+                let df = (&f).diff();
+                let dg = (&g).diff();
+                (df * g) + (f * dg)
+            }
             Div => {
-                ((lhs.diff() * rhs.clone()) - (lhs.clone() * rhs.diff())) / (rhs.clone() ^ 2.into())
+                let df = (&f).diff();
+                let dg = (&g).diff();
+                ((df * g.clone()) - (f * dg)) / (g ^ 2.into())
             }
             Pow => {
-                let df: ExprRc = match (lhs.borrow(), rhs.borrow()) {
-                    (Const(_), _) => {
-                        // TODO: make it nicer
-                        Self::OutExpr::from((Pow, lhs.0.clone(), rhs.0.clone())) * (Ln, lhs).into()
-                    }
-                    (_, Const(a)) => Self::OutExpr::from(*a) * (lhs.clone() ^ (a - 1.0).into()),
+                let df = match (f.borrow(), g.borrow()) {
+                    (Const(_), _) => Self::OutExpr::from((Pow, f.0.clone(), g.0)) * (Ln, &f).into(),
+                    (_, Const(a)) => Self::OutExpr::from(*a) * (f.clone() ^ (a - 1.0).into()),
                     _ => panic!("Unsupported operatation: only a^x and x^a are allowed"),
                 };
-                df >> lhs.clone()
+                df >> f
             }
         }
     }
@@ -357,7 +364,6 @@ impl Mul for ExprRc {
             (_, Const(y)) if approx!(y, 0) => 0.into(),
             (Const(x), Binary(div)) if div.op == Op::Div => {
                 if let Const(v) = *div.lhs {
-                    // TODO: can we do without shellow copy of y and x?
                     (Op::Div, Const(x * v).into(), div.rhs.clone()).into()
                 } else {
                     (Op::Mul, Const(*x).into(), rhs.0).into()
@@ -365,7 +371,6 @@ impl Mul for ExprRc {
             }
             (Binary(div), Const(y)) if div.op == Op::Div => {
                 if let Const(v) = *div.lhs {
-                    // TODO: can we do without shellow copy of y and x?
                     (Op::Div, Const(v * y).into(), div.rhs.clone()).into()
                 } else {
                     (Op::Mul, self.0, Const(*y).into()).into()
