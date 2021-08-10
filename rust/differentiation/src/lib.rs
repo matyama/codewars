@@ -20,6 +20,8 @@ pub fn diff(expr: &str) -> String {
 //  - Function and binary operation enumerations
 //  - Expression representations
 //  - An `Rc` wrapper for expressions
+//  - A wrapper that helps to implement `TryFrom` for binary operations which might simplify to
+//  generic expressions
 
 #[derive(Clone, Copy, Debug)]
 enum Func {
@@ -77,6 +79,8 @@ enum Expr {
 #[derive(Clone, Debug)]
 struct ExprRc(Rc<Expr>);
 
+struct SimplifiedBinary(Expr);
+
 // Expression parsing implementations
 // TODO: Automatically derive string patterns from enum variants.
 
@@ -128,16 +132,17 @@ fn split_operands(args: &str) -> Option<(&str, &str)> {
     }
 }
 
-impl TryFrom<(&str, &str)> for OpExpr {
+impl TryFrom<(&str, &str)> for SimplifiedBinary {
     type Error = ();
 
     fn try_from(value: (&str, &str)) -> Result<Self, Self::Error> {
         let (lhs, rhs) = split_operands(value.1).ok_or(())?;
-        Ok(Self {
-            lhs: lhs.parse().map(Rc::new)?,
-            op: value.0.parse()?,
-            rhs: rhs.parse().map(Rc::new)?,
-        })
+        let op = value.0.parse()?;
+        let lhs = lhs.parse()?;
+        let rhs = rhs.parse()?;
+        // Note: Simplify here so that we don't have to deal with `Rc`s inside `OpExpr` later
+        let expr = (op, lhs, rhs).simplify()?;
+        Ok(SimplifiedBinary(expr))
     }
 }
 
@@ -167,7 +172,7 @@ impl FromStr for Expr {
         let expr = if let Some(split) = expr.split_once(' ') {
             split
                 .try_into()
-                .map(Self::Binary)
+                .map(|SimplifiedBinary(expr)| expr)
                 .or_else(|_| split.try_into().map(Self::Unary))?
         } else {
             // Constant or a variable
@@ -309,6 +314,54 @@ impl Display for Expr {
     }
 }
 
+// Expression simplification
+//  - TODO: It's unfortunate that the expression reduction logic in both here and in `ExprRc` ops.
+
+trait Simplify {
+    type OutExpr;
+
+    fn simplify(self) -> Self::OutExpr;
+}
+
+impl Simplify for (Op, Expr, Expr) {
+    // TODO: Change Err to String
+    type OutExpr = Result<Expr, ()>;
+
+    fn simplify(self) -> Self::OutExpr {
+        use Expr::*;
+        use Op::*;
+
+        // Binary expression reduction rules
+        let expr = match self {
+            (Sub, Var(x), Var(y)) if x == y => 0.into(),
+            (Add, Const(x), Const(y)) => (x + y).into(),
+            (Sub, Const(x), Const(y)) => (x - y).into(),
+            (Mul, Const(x), Const(y)) => (x * y).into(),
+            (Div, Const(x), Const(y)) => (x / y).into(),
+            (Pow, Const(x), Const(y)) => x.powf(y).into(),
+            (Add, Const(c), x) | (Add | Sub, x, Const(c)) if approx!(c, 0) => x,
+            (Mul, Const(c), x) | (Mul, x, Const(c)) | (Div, x, Const(c)) | (Pow, x, Const(c))
+                if approx!(c, 1) =>
+            {
+                x
+            }
+            (Mul, Const(c), _) | (Mul, _, Const(c)) | (Div, Const(c), _) if approx!(c, 0) => {
+                0.into()
+            }
+            (Pow, _, Const(c)) if approx!(c, 0) => 1.into(),
+            // division by zero is undefined,
+            (Div, _, Const(c)) if approx!(c, 0) => return Err(()),
+            (op, lhs, rhs) => Binary(OpExpr {
+                lhs: lhs.into(),
+                op,
+                rhs: rhs.into(),
+            }),
+        };
+
+        Ok(expr)
+    }
+}
+
 // Expression algebra
 //  - Operations on expression refs additionally simplify (reduce) resulting expressions
 
@@ -346,6 +399,7 @@ impl Sub for ExprRc {
         match (self.0.borrow(), rhs.0.borrow()) {
             (_, Const(y)) if approx!(y, 0) => self,
             (Const(x), Const(y)) => (x - y).into(),
+            (Var(x), Var(y)) if x == y => 0.into(),
             _ => (Op::Sub, self.0, rhs.0).into(),
         }
     }
@@ -390,6 +444,7 @@ impl Div for ExprRc {
         match (self.0.borrow(), rhs.0.borrow()) {
             (Const(c), _) if approx!(c, 0) => 0.into(),
             (_, Const(c)) if approx!(c, 0) => panic!("division by zero"),
+            (_, Const(c)) if approx!(c, 1) => self.0.into(),
             (Const(x), Const(y)) => (x / y).into(),
             _ => (Op::Div, self.0, rhs.0).into(),
         }
@@ -622,5 +677,11 @@ mod tests {
             result == "(* 3 (* 2 x))" || result == "(* 6 x)",
             "expected (* 3 (* 2 x)) or (* 6 x)"
         );
+    }
+
+    #[test]
+    fn simplification() {
+        assert_eq!(diff("(exp (* 1 x))"), "(exp x)");
+        assert_eq!(diff("(/ (exp (* 1 x)) (+ (- x x) 1))"), "(exp x)");
     }
 }
