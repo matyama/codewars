@@ -10,10 +10,7 @@ use std::{
 };
 
 pub fn diff(expr: &str) -> String {
-    expr.parse::<Expr>()
-        .expect("Invalid expression")
-        .diff()
-        .to_string()
+    expr.parse::<Expr>().unwrap().diff().to_string()
 }
 
 // Basic algebraic data structures
@@ -85,7 +82,8 @@ struct SimplifiedBinary(Expr);
 // TODO: Automatically derive string patterns from enum variants.
 
 impl FromStr for Func {
-    type Err = ();
+    type Err = String;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "sin" => Ok(Self::Sin),
@@ -93,13 +91,13 @@ impl FromStr for Func {
             "tan" => Ok(Self::Tan),
             "exp" => Ok(Self::Exp),
             "ln" => Ok(Self::Ln),
-            _ => Err(()),
+            _ => Err(format!("Failed to parse a function name from '{}'", s)),
         }
     }
 }
 
 impl FromStr for Op {
-    type Err = ();
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -108,7 +106,7 @@ impl FromStr for Op {
             "*" => Ok(Self::Mul),
             "/" => Ok(Self::Div),
             "^" => Ok(Self::Pow),
-            _ => Err(()),
+            _ => Err(format!("Failed to parse a binary operator from '{}'", s)),
         }
     }
 }
@@ -133,10 +131,11 @@ fn split_operands(args: &str) -> Option<(&str, &str)> {
 }
 
 impl TryFrom<(&str, &str)> for SimplifiedBinary {
-    type Error = ();
+    type Error = String;
 
     fn try_from(value: (&str, &str)) -> Result<Self, Self::Error> {
-        let (lhs, rhs) = split_operands(value.1).ok_or(())?;
+        let (lhs, rhs) = split_operands(value.1)
+            .ok_or(format!("Failed to separate operands from '{}", value.1))?;
         let op = value.0.parse()?;
         let lhs = lhs.parse()?;
         let rhs = rhs.parse()?;
@@ -147,7 +146,7 @@ impl TryFrom<(&str, &str)> for SimplifiedBinary {
 }
 
 impl TryFrom<(&str, &str)> for FuncExpr {
-    type Error = ();
+    type Error = String;
 
     fn try_from(value: (&str, &str)) -> Result<Self, Self::Error> {
         Ok(Self {
@@ -158,10 +157,11 @@ impl TryFrom<(&str, &str)> for FuncExpr {
 }
 
 impl FromStr for Expr {
-    type Err = ();
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Strip parentheses
+        //  - TODO: error handling
         let expr = if s.starts_with('(') {
             &s[1..s.len() - 1]
         } else {
@@ -173,7 +173,12 @@ impl FromStr for Expr {
             split
                 .try_into()
                 .map(|SimplifiedBinary(expr)| expr)
-                .or_else(|_| split.try_into().map(Self::Unary))?
+                .or_else(|e1| {
+                    split
+                        .try_into()
+                        .map(Self::Unary)
+                        .map_err(|e2| format!("{} & {}", e1, e2))
+                })?
         } else {
             // Constant or a variable
             expr.trim_start_matches('-')
@@ -324,8 +329,7 @@ trait Simplify {
 }
 
 impl Simplify for (Op, Expr, Expr) {
-    // TODO: Change Err to String
-    type OutExpr = Result<Expr, ()>;
+    type OutExpr = Result<Expr, String>;
 
     fn simplify(self) -> Self::OutExpr {
         use Expr::*;
@@ -333,6 +337,9 @@ impl Simplify for (Op, Expr, Expr) {
 
         // Binary expression reduction rules
         let expr = match self {
+            (Div, x, Const(c)) if approx!(c, 0) => {
+                return Err(format!("Division by zero in '({} {} {})'", Div, x, c));
+            }
             (Sub, Var(x), Var(y)) if x == y => 0.into(),
             (Add, Const(x), Const(y)) => (x + y).into(),
             (Sub, Const(x), Const(y)) => (x - y).into(),
@@ -349,8 +356,6 @@ impl Simplify for (Op, Expr, Expr) {
                 0.into()
             }
             (Pow, _, Const(c)) if approx!(c, 0) => 1.into(),
-            // division by zero is undefined,
-            (Div, _, Const(c)) if approx!(c, 0) => return Err(()),
             (op, lhs, rhs) => Binary(OpExpr {
                 lhs: lhs.into(),
                 op,
@@ -443,7 +448,7 @@ impl Div for ExprRc {
         use Expr::*;
         match (self.0.borrow(), rhs.0.borrow()) {
             (Const(c), _) if approx!(c, 0) => 0.into(),
-            (_, Const(c)) if approx!(c, 0) => panic!("division by zero"),
+            (_, Const(c)) if approx!(c, 0) => panic!("Division by zero"),
             (_, Const(c)) if approx!(c, 1) => self.0.into(),
             (Const(x), Const(y)) => (x / y).into(),
             _ => (Op::Div, self.0, rhs.0).into(),
@@ -683,5 +688,23 @@ mod tests {
     fn simplification() {
         assert_eq!(diff("(exp (* 1 x))"), "(exp x)");
         assert_eq!(diff("(/ (exp (* 1 x)) (+ (- x x) 1))"), "(exp x)");
+    }
+
+    #[test]
+    #[should_panic(expected = "Failed to parse a function name from 'fn'")]
+    fn unsupported_function() {
+        diff("(fn x)");
+    }
+
+    #[test]
+    #[should_panic(expected = "Failed to parse a binary operator from '$'")]
+    fn unsupported_operator() {
+        diff("($ 1 2)");
+    }
+
+    #[test]
+    #[should_panic(expected = "Division by zero in '(/ (exp x) 0)'")]
+    fn division_by_zero() {
+        diff("(/ (exp (* 1 x)) (- x x))");
     }
 }
