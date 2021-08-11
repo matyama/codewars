@@ -167,7 +167,7 @@ impl FromStr for Expr {
                 return Err(format!("'{}' does not have matching parentheses", s));
             }
 
-            // Prefix expressions must contain contain at least one symbol between parentheses
+            // Prefix expressions must contain at least one symbol between parentheses
             if s.len() < 3 {
                 return Err(format!("'{}' is too short to be valid", s));
             }
