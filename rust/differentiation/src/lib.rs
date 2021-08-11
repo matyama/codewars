@@ -329,23 +329,52 @@ impl Display for Expr {
 }
 
 // Expression simplification
-//  - TODO: It's unfortunate that the expression reduction logic in both here and in `ExprRc` ops.
+//
+// Unfortunately, GATs have not yet been stabilized, so we have to define `F` as a generic type
+// parameter on `Simplify` trait and not on an associated type such as
+// ```
+// type Simplified<F> where F: From<i8> + From<f64> + From<E> + From<Self> = Result<F, String>;
+// ```
+//
+// One also can't just define it on the `impl<E, F> Simplify for (Op, E, E)` becaues it would not
+// be constrained by the implemented trait.
 
-trait Simplify {
-    type OutExpr;
-
-    fn simplify(self) -> Self::OutExpr;
+trait Simplify<F> {
+    fn simplify(self) -> Result<F, String>;
 }
 
-impl Simplify for (Op, Expr, Expr) {
-    type OutExpr = Result<Expr, String>;
+// TODO: Add extra rules to for `Op::Mul`
+/*
+    (Const(x), Binary(div)) if div.op == Op::Div => {
+        if let Const(v) = *div.lhs {
+            (Op::Div, Const(x * v).into(), div.rhs.clone()).into()
+        } else {
+            (Op::Mul, Const(*x).into(), rhs.0).into()
+        }
+    }
+    (Binary(div), Const(y)) if div.op == Op::Div => {
+        if let Const(v) = *div.lhs {
+            (Op::Div, Const(v * y).into(), div.rhs.clone()).into()
+        } else {
+            (Op::Mul, self.0, Const(*y).into()).into()
+        }
+    }
+}
+*/
 
-    fn simplify(self) -> Self::OutExpr {
+impl<E, F> Simplify<F> for (Op, E, E)
+where
+    E: Borrow<Expr> + Display,
+    F: From<i8> + From<f64> + From<E> + From<Self>,
+{
+    fn simplify(self) -> Result<F, String> {
         use Expr::*;
         use Op::*;
 
+        let (op, lhs, rhs) = self;
+
         // Binary expression reduction rules
-        let expr = match self {
+        let expr = match (op, lhs.borrow(), rhs.borrow()) {
             (Div, x, Const(c)) if approx!(c, 0) => {
                 return Err(format!("Division by zero in '({} {} {})'", Div, x, c));
             }
@@ -354,22 +383,18 @@ impl Simplify for (Op, Expr, Expr) {
             (Sub, Const(x), Const(y)) => (x - y).into(),
             (Mul, Const(x), Const(y)) => (x * y).into(),
             (Div, Const(x), Const(y)) => (x / y).into(),
-            (Pow, Const(x), Const(y)) => x.powf(y).into(),
-            (Add, Const(c), x) | (Add | Sub, x, Const(c)) if approx!(c, 0) => x,
-            (Mul, Const(c), x) | (Mul, x, Const(c)) | (Div, x, Const(c)) | (Pow, x, Const(c))
-                if approx!(c, 1) =>
-            {
-                x
+            (Pow, Const(x), Const(y)) => x.powf(*y).into(),
+            (Add | Sub, _, Const(c)) if approx!(c, 0) => lhs.into(),
+            (Add, Const(c), _) if approx!(c, 0) => rhs.into(),
+            (Mul, Const(c), _) if approx!(c, 1) => rhs.into(),
+            (Mul, _, Const(c)) | (Div, _, Const(c)) | (Pow, _, Const(c)) if approx!(c, 1) => {
+                lhs.into()
             }
             (Mul, Const(c), _) | (Mul, _, Const(c)) | (Div, Const(c), _) if approx!(c, 0) => {
                 0.into()
             }
             (Pow, _, Const(c)) if approx!(c, 0) => 1.into(),
-            (op, lhs, rhs) => Binary(OpExpr {
-                lhs: lhs.into(),
-                op,
-                rhs: rhs.into(),
-            }),
+            _ => (op, lhs, rhs).into(),
         };
 
         Ok(expr)
@@ -378,6 +403,7 @@ impl Simplify for (Op, Expr, Expr) {
 
 // Expression algebra
 //  - Operations on expression refs additionally simplify (reduce) resulting expressions
+//  - TODO: error propagation
 
 impl Neg for ExprRc {
     type Output = Self;
@@ -395,13 +421,7 @@ impl Add for ExprRc {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        use Expr::*;
-        match (self.0.borrow(), rhs.0.borrow()) {
-            (_, Const(y)) if approx!(y, 0) => self,
-            (Const(x), _) if approx!(x, 0) => rhs,
-            (Const(x), Const(y)) => (x + y).into(),
-            _ => (Op::Add, self.0, rhs.0).into(),
-        }
+        (Op::Add, self.0, rhs.0).simplify().unwrap()
     }
 }
 
@@ -409,13 +429,7 @@ impl Sub for ExprRc {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        use Expr::*;
-        match (self.0.borrow(), rhs.0.borrow()) {
-            (_, Const(y)) if approx!(y, 0) => self,
-            (Const(x), Const(y)) => (x - y).into(),
-            (Var(x), Var(y)) if x == y => 0.into(),
-            _ => (Op::Sub, self.0, rhs.0).into(),
-        }
+        (Op::Sub, self.0, rhs.0).simplify().unwrap()
     }
 }
 
@@ -423,30 +437,7 @@ impl Mul for ExprRc {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        use Expr::*;
-        // `if let` guards are still unstable in pattern matching: https://bit.ly/3f8ENRP
-        match (self.0.borrow(), rhs.0.borrow()) {
-            (Const(x), _) if approx!(x, 1) => rhs,
-            (Const(x), _) if approx!(x, 0) => 0.into(),
-            (_, Const(y)) if approx!(y, 1) => self,
-            (_, Const(y)) if approx!(y, 0) => 0.into(),
-            (Const(x), Binary(div)) if div.op == Op::Div => {
-                if let Const(v) = *div.lhs {
-                    (Op::Div, Const(x * v).into(), div.rhs.clone()).into()
-                } else {
-                    (Op::Mul, Const(*x).into(), rhs.0).into()
-                }
-            }
-            (Binary(div), Const(y)) if div.op == Op::Div => {
-                if let Const(v) = *div.lhs {
-                    (Op::Div, Const(v * y).into(), div.rhs.clone()).into()
-                } else {
-                    (Op::Mul, self.0, Const(*y).into()).into()
-                }
-            }
-            (Const(x), Const(y)) => (x * y).into(),
-            _ => (Op::Mul, self.0, rhs.0).into(),
-        }
+        (Op::Mul, self.0, rhs.0).simplify().unwrap()
     }
 }
 
@@ -454,14 +445,7 @@ impl Div for ExprRc {
     type Output = Self;
 
     fn div(self, rhs: Self) -> Self::Output {
-        use Expr::*;
-        match (self.0.borrow(), rhs.0.borrow()) {
-            (Const(c), _) if approx!(c, 0) => 0.into(),
-            (_, Const(c)) if approx!(c, 0) => panic!("Division by zero"),
-            (_, Const(c)) if approx!(c, 1) => self.0.into(),
-            (Const(x), Const(y)) => (x / y).into(),
-            _ => (Op::Div, self.0, rhs.0).into(),
-        }
+        (Op::Div, self.0, rhs.0).simplify().unwrap()
     }
 }
 
@@ -470,13 +454,7 @@ impl BitXor for ExprRc {
     type Output = Self;
 
     fn bitxor(self, rhs: Self) -> Self::Output {
-        use Expr::*;
-        match (self.0.borrow(), rhs.0.borrow()) {
-            (_, Const(c)) if approx!(c, 0) => 1.into(),
-            (_, Const(c)) if approx!(c, 1) => self,
-            (Const(x), Const(y)) => x.powf(*y).into(),
-            _ => (Op::Pow, self.0, rhs.0).into(),
-        }
+        (Op::Pow, self.0, rhs.0).simplify().unwrap()
     }
 }
 
@@ -513,6 +491,17 @@ impl From<i8> for Expr {
 impl From<ExprRc> for Expr {
     fn from(e: ExprRc) -> Self {
         (*e).clone()
+    }
+}
+
+impl From<(Op, Expr, Expr)> for Expr {
+    fn from(e: (Op, Expr, Expr)) -> Self {
+        let (op, lhs, rhs) = e;
+        Self::Binary(OpExpr {
+            lhs: lhs.into(),
+            op,
+            rhs: rhs.into(),
+        })
     }
 }
 
