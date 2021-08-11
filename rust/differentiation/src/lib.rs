@@ -161,8 +161,17 @@ impl FromStr for Expr {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Strip parentheses
-        //  - TODO: error handling
         let expr = if s.starts_with('(') {
+            // Prefix expressions statring with opening '(' must end with ')'
+            if !s.ends_with(')') {
+                return Err(format!("'{}' does not have matching parentheses", s));
+            }
+
+            // Prefix expressions must contain contain at least one symbol between parentheses
+            if s.len() < 3 {
+                return Err(format!("'{}' is too short to be valid", s));
+            }
+
             &s[1..s.len() - 1]
         } else {
             s
@@ -688,6 +697,18 @@ mod tests {
     fn simplification() {
         assert_eq!(diff("(exp (* 1 x))"), "(exp x)");
         assert_eq!(diff("(/ (exp (* 1 x)) (+ (- x x) 1))"), "(exp x)");
+    }
+
+    #[test]
+    #[should_panic(expected = "'(+ x 1' does not have matching parentheses")]
+    fn missing_parenthesis() {
+        diff("(exp (+ x 1)");
+    }
+
+    #[test]
+    #[should_panic(expected = "'()' is too short to be valid")]
+    fn empty_expression() {
+        diff("(exp ())");
     }
 
     #[test]
