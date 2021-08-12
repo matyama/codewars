@@ -244,23 +244,23 @@ impl Diff for OpExpr {
 
         match self.op {
             Add => {
-                let df = (&f).diff()?;
-                let dg = (&g).diff()?;
+                let df = f.diff()?;
+                let dg = g.diff()?;
                 Ok(df + dg)
             }
             Sub => {
-                let df = (&f).diff()?;
-                let dg = (&g).diff()?;
+                let df = f.diff()?;
+                let dg = g.diff()?;
                 Ok(df - dg)
             }
             Mul => {
-                let df = (&f).diff()?;
-                let dg = (&g).diff()?;
+                let df = f.diff()?;
+                let dg = g.diff()?;
                 Ok((df * g) + (f * dg))
             }
             Div => {
-                let df = (&f).diff()?;
-                let dg = (&g).diff()?;
+                let df = f.diff()?;
+                let dg = g.diff()?;
                 let g2 = g.clone() ^ 2.into();
                 ((df * g) - (f * dg)) / g2
             }
