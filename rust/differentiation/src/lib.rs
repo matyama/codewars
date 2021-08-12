@@ -10,7 +10,10 @@ use std::{
 };
 
 pub fn diff(expr: &str) -> String {
-    expr.parse::<Expr>().unwrap().diff().to_string()
+    expr.parse::<Expr>()
+        .and_then(|expr| expr.diff())
+        .unwrap()
+        .to_string()
 }
 
 // Basic algebraic data structures
@@ -140,7 +143,7 @@ impl TryFrom<(&str, &str)> for SimplifiedBinary {
         let lhs = lhs.parse::<Expr>()?;
         let rhs = rhs.parse::<Expr>()?;
         // Note: Simplify here so that we don't have to deal with `Rc`s inside `OpExpr` later
-        let expr = (op, lhs, rhs).simplify()?;
+        let expr = (op, lhs, rhs).valid()?.simplify();
         Ok(SimplifiedBinary(expr))
     }
 }
@@ -204,27 +207,27 @@ impl FromStr for Expr {
 trait Diff {
     type OutExpr;
 
-    fn diff(&self) -> Self::OutExpr;
+    fn diff(&self) -> Result<Self::OutExpr, String>;
 }
 
 impl Diff for FuncExpr {
     type OutExpr = ExprRc;
 
-    fn diff(&self) -> Self::OutExpr {
+    fn diff(&self) -> Result<Self::OutExpr, String> {
         use Expr::*;
         use Func::*;
 
         if let Const(_) = *self.arg {
-            return 0.into();
+            return Ok(0.into());
         }
 
         let df = match self.f {
-            Sin => self.with(Cos),
-            Cos => -self.with::<Self::OutExpr>(Sin),
+            Sin => Ok(self.with(Cos)),
+            Cos => Ok(-self.with::<Self::OutExpr>(Sin)),
             Tan => Self::OutExpr::from(1) / (self.with::<Self::OutExpr>(Cos) ^ 2.into()),
-            Exp => self.into(),
+            Exp => Ok(self.into()),
             Ln => Self::OutExpr::from(1) / self.arg.clone().into(),
-        };
+        }?;
 
         // Apply the chain rule
         df >> self.arg.clone().into()
@@ -234,7 +237,7 @@ impl Diff for FuncExpr {
 impl Diff for OpExpr {
     type OutExpr = ExprRc;
 
-    fn diff(&self) -> Self::OutExpr {
+    fn diff(&self) -> Result<Self::OutExpr, String> {
         use Expr::*;
         use Func::*;
         use Op::*;
@@ -244,30 +247,36 @@ impl Diff for OpExpr {
 
         match self.op {
             Add => {
-                let df = (&f).diff();
-                let dg = (&g).diff();
-                df + dg
+                let df = (&f).diff()?;
+                let dg = (&g).diff()?;
+                Ok(df + dg)
             }
             Sub => {
-                let df = (&f).diff();
-                let dg = (&g).diff();
-                df - dg
+                let df = (&f).diff()?;
+                let dg = (&g).diff()?;
+                Ok(df - dg)
             }
             Mul => {
-                let df = (&f).diff();
-                let dg = (&g).diff();
-                (df * g) + (f * dg)
+                let df = (&f).diff()?;
+                let dg = (&g).diff()?;
+                Ok((df * g) + (f * dg))
             }
             Div => {
-                let df = (&f).diff();
-                let dg = (&g).diff();
-                ((df * g.clone()) - (f * dg)) / (g ^ 2.into())
+                let df = (&f).diff()?;
+                let dg = (&g).diff()?;
+                let g2 = g.clone() ^ 2.into();
+                ((df * g) - (f * dg)) / g2
             }
             Pow => {
                 let df = match (f.borrow(), g.borrow()) {
                     (Const(_), _) => Self::OutExpr::from((Pow, f.0.clone(), g.0)) * (Ln, &f).into(),
                     (_, Const(a)) => Self::OutExpr::from(*a) * (f.clone() ^ (a - 1.0).into()),
-                    _ => panic!("Unsupported operatation: only a^x and x^a are allowed"),
+                    (f, g) => {
+                        return Err(format!(
+                            "Can't diff '(^ {} {})', only forms supported are a^x and x^a",
+                            f, g
+                        ));
+                    }
                 };
                 df >> f
             }
@@ -278,12 +287,12 @@ impl Diff for OpExpr {
 impl Diff for Expr {
     type OutExpr = Self;
 
-    fn diff(&self) -> Self::OutExpr {
+    fn diff(&self) -> Result<Self::OutExpr, String> {
         match self {
-            Self::Const(_) => 0.into(),
-            Self::Var(_) => 1.into(),
-            Self::Unary(f) => f.diff().into(),
-            Self::Binary(op) => op.diff().into(),
+            Self::Const(_) => Ok(0.into()),
+            Self::Var(_) => Ok(1.into()),
+            Self::Unary(f) => f.diff().map(Self::OutExpr::from),
+            Self::Binary(op) => op.diff().map(Self::OutExpr::from),
         }
     }
 }
@@ -291,8 +300,8 @@ impl Diff for Expr {
 impl Diff for ExprRc {
     type OutExpr = Self;
 
-    fn diff(&self) -> Self::OutExpr {
-        self.0.diff().into()
+    fn diff(&self) -> Result<Self::OutExpr, String> {
+        self.0.diff().map(Self::OutExpr::from)
     }
 }
 
@@ -328,19 +337,44 @@ impl Display for Expr {
     }
 }
 
+// Expression validation
+
+trait Validated: Sized {
+    fn valid(self) -> Result<Self, String>;
+}
+
+impl<E> Validated for (Op, E, E)
+where
+    E: Borrow<Expr> + Display,
+{
+    fn valid(self) -> Result<Self, String> {
+        use Expr::*;
+        use Op::*;
+
+        let (op, lhs, rhs) = self;
+
+        match (op, lhs.borrow(), rhs.borrow()) {
+            (Div, x, Const(c)) if approx!(c, 0) => {
+                Err(format!("Division by zero in '({} {} {})'", Div, x, c))
+            }
+            _ => Ok((op, lhs, rhs)),
+        }
+    }
+}
+
 // Expression simplification
 //
 // Unfortunately, GATs have not yet been stabilized, so we have to define `F` as a generic type
 // parameter on `Simplify` trait and not on an associated type such as
 // ```
-// type Simplified<F> where F: From<i8> + From<f64> + From<E> + From<Self> = Result<F, String>;
+// type Simplified<F> where F: From<i8> + From<f64> + From<E> + From<Self> = F;
 // ```
 //
 // One also can't just define it on the `impl<E, F> Simplify for (Op, E, E)` becaues it would not
 // be constrained by the implemented trait.
 
 trait Simplify<F> {
-    fn simplify(self) -> Result<F, String>;
+    fn simplify(self) -> F;
 }
 
 impl<E, F> Simplify<F> for (Op, E, E)
@@ -348,17 +382,14 @@ where
     E: Borrow<Expr> + Display,
     F: From<i8> + From<f64> + From<E> + From<Self> + From<(Op, Rc<Expr>, Rc<Expr>)>,
 {
-    fn simplify(self) -> Result<F, String> {
+    fn simplify(self) -> F {
         use Expr::*;
         use Op::*;
 
         let (op, lhs, rhs) = self;
 
         // Binary expression reduction rules
-        let expr = match (op, lhs.borrow(), rhs.borrow()) {
-            (Div, x, Const(c)) if approx!(c, 0) => {
-                return Err(format!("Division by zero in '({} {} {})'", Div, x, c));
-            }
+        match (op, lhs.borrow(), rhs.borrow()) {
             (Sub, Var(x), Var(y)) if x == y => 0.into(),
             (Add, Const(x), Const(y)) => (x + y).into(),
             (Sub, Const(x), Const(y)) => (x - y).into(),
@@ -385,15 +416,12 @@ where
                 }
             }
             _ => (op, lhs, rhs).into(),
-        };
-
-        Ok(expr)
+        }
     }
 }
 
 // Expression algebra
 //  - Operations on expression refs additionally simplify (reduce) resulting expressions
-//  - TODO: error propagation
 
 impl Neg for ExprRc {
     type Output = Self;
@@ -411,7 +439,7 @@ impl Add for ExprRc {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        (Op::Add, self.0, rhs.0).simplify().unwrap()
+        (Op::Add, self.0, rhs.0).simplify()
     }
 }
 
@@ -419,7 +447,7 @@ impl Sub for ExprRc {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        (Op::Sub, self.0, rhs.0).simplify().unwrap()
+        (Op::Sub, self.0, rhs.0).simplify()
     }
 }
 
@@ -427,15 +455,15 @@ impl Mul for ExprRc {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        (Op::Mul, self.0, rhs.0).simplify().unwrap()
+        (Op::Mul, self.0, rhs.0).simplify()
     }
 }
 
 impl Div for ExprRc {
-    type Output = Self;
+    type Output = Result<Self, String>;
 
     fn div(self, rhs: Self) -> Self::Output {
-        (Op::Div, self.0, rhs.0).simplify().unwrap()
+        Ok((Op::Div, self.0, rhs.0).valid()?.simplify())
     }
 }
 
@@ -444,23 +472,24 @@ impl BitXor for ExprRc {
     type Output = Self;
 
     fn bitxor(self, rhs: Self) -> Self::Output {
-        (Op::Pow, self.0, rhs.0).simplify().unwrap()
+        (Op::Pow, self.0, rhs.0).simplify()
     }
 }
 
 // Note that we interpret `self >> rhs` as the chain rule:
 // `d(rhs)/dx * self` where `self` is assumed to be the derivative of an outer function
 impl Shr for ExprRc {
-    type Output = Self;
+    type Output = Result<Self, String>;
 
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn shr(self, rhs: Self) -> Self::Output {
         use Expr::*;
-        match (self.borrow(), rhs.borrow()) {
+        let expr = match (self.borrow(), rhs.borrow()) {
             (Const(_) | Var(_), _) => self,
             (_, Const(_) | Var(_)) => self,
-            _ => rhs.diff() * self,
-        }
+            _ => rhs.diff()? * self,
+        };
+        Ok(expr)
     }
 }
 
@@ -713,5 +742,11 @@ mod tests {
     #[should_panic(expected = "Division by zero in '(/ (exp x) 0)'")]
     fn division_by_zero() {
         diff("(/ (exp (* 1 x)) (- x x))");
+    }
+
+    #[test]
+    #[should_panic(expected = "Can't diff '(^ x x)', only forms supported are a^x and x^a")]
+    fn unsupported_power() {
+        diff("(^ x x)");
     }
 }
