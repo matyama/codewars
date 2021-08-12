@@ -10,10 +10,7 @@ use std::{
 };
 
 pub fn diff(expr: &str) -> String {
-    expr.parse::<Expr>()
-        .and_then(|expr| expr.diff())
-        .unwrap()
-        .to_string()
+    expr.parse().and_then(Expr::into_diff).unwrap().to_string()
 }
 
 // Basic algebraic data structures
@@ -302,6 +299,20 @@ impl Diff for ExprRc {
 
     fn diff(&self) -> Result<Self::OutExpr, String> {
         self.0.diff().map(Self::OutExpr::from)
+    }
+}
+
+trait IntoDiff {
+    type OutExpr;
+
+    fn into_diff(self) -> Result<Self::OutExpr, String>;
+}
+
+impl IntoDiff for Expr {
+    type OutExpr = Self;
+
+    fn into_diff(self) -> Result<Self::OutExpr, String> {
+        self.diff()
     }
 }
 
