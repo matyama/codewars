@@ -137,8 +137,8 @@ impl TryFrom<(&str, &str)> for SimplifiedBinary {
         let (lhs, rhs) = split_operands(value.1)
             .ok_or(format!("Failed to separate operands from '{}", value.1))?;
         let op = value.0.parse()?;
-        let lhs = lhs.parse()?;
-        let rhs = rhs.parse()?;
+        let lhs = lhs.parse::<Expr>()?;
+        let rhs = rhs.parse::<Expr>()?;
         // Note: Simplify here so that we don't have to deal with `Rc`s inside `OpExpr` later
         let expr = (op, lhs, rhs).simplify()?;
         Ok(SimplifiedBinary(expr))
@@ -343,29 +343,10 @@ trait Simplify<F> {
     fn simplify(self) -> Result<F, String>;
 }
 
-// TODO: Add extra rules to for `Op::Mul`
-/*
-    (Const(x), Binary(div)) if div.op == Op::Div => {
-        if let Const(v) = *div.lhs {
-            (Op::Div, Const(x * v).into(), div.rhs.clone()).into()
-        } else {
-            (Op::Mul, Const(*x).into(), rhs.0).into()
-        }
-    }
-    (Binary(div), Const(y)) if div.op == Op::Div => {
-        if let Const(v) = *div.lhs {
-            (Op::Div, Const(v * y).into(), div.rhs.clone()).into()
-        } else {
-            (Op::Mul, self.0, Const(*y).into()).into()
-        }
-    }
-}
-*/
-
 impl<E, F> Simplify<F> for (Op, E, E)
 where
     E: Borrow<Expr> + Display,
-    F: From<i8> + From<f64> + From<E> + From<Self>,
+    F: From<i8> + From<f64> + From<E> + From<Self> + From<(Op, Rc<Expr>, Rc<Expr>)>,
 {
     fn simplify(self) -> Result<F, String> {
         use Expr::*;
@@ -394,6 +375,15 @@ where
                 0.into()
             }
             (Pow, _, Const(c)) if approx!(c, 0) => 1.into(),
+            // Unfortunately `if let` guards are not stable yet and one can't match on `Rc`
+            (Mul, Const(a), Binary(div)) | (Mul, Binary(div), Const(a)) if div.op == Div => {
+                if let Const(b) = *div.lhs {
+                    // Note: This clone is cheap as it only temporarily increments `Rc` counter
+                    (Div, Const(a * b).into(), div.rhs.clone()).into()
+                } else {
+                    (op, lhs, rhs).into()
+                }
+            }
             _ => (op, lhs, rhs).into(),
         };
 
@@ -502,6 +492,13 @@ impl From<(Op, Expr, Expr)> for Expr {
             op,
             rhs: rhs.into(),
         })
+    }
+}
+
+impl From<(Op, Rc<Expr>, Rc<Expr>)> for Expr {
+    fn from(e: (Op, Rc<Expr>, Rc<Expr>)) -> Self {
+        let (op, lhs, rhs) = e;
+        Self::Binary(OpExpr { lhs, op, rhs })
     }
 }
 
