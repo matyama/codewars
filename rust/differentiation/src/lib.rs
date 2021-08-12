@@ -189,10 +189,20 @@ impl FromStr for Expr {
                         .map_err(|e2| format!("{} & {}", e1, e2))
                 })?
         } else {
+            let negated = expr.starts_with('-');
+
             // Constant or a variable
-            expr.trim_start_matches('-')
+            let expr = expr
+                .trim_start_matches('-')
                 .parse()
-                .map_or_else(|_| Self::Var(expr.to_owned()), Self::Const)
+                .map_or_else(|_| Self::Var(expr.to_owned()), Self::Const);
+
+            // Apply unary '-'
+            match expr {
+                x @ Self::Var(_) if negated => (Op::Sub, 0.into(), x).into(),
+                Self::Const(c) if negated => (-c).into(),
+                expr => expr,
+            }
         };
 
         Ok(expr)
@@ -705,6 +715,7 @@ mod tests {
         );
 
         assert_eq!(diff("(exp (* 2 x))"), "(* 2 (exp (* 2 x)))");
+        assert_eq!(diff("(+ (* -16 x) -74)"), "-16");
     }
 
     #[test]
