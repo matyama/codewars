@@ -8,8 +8,7 @@ use std::{
     rc::Rc,
     str::FromStr,
 };
-use strum::ParseError::VariantNotFound;
-use strum_macros::EnumString;
+use strum::{EnumString, ParseError::VariantNotFound};
 
 pub fn diff(expr: &str) -> String {
     expr.parse().and_then(Expr::into_diff).unwrap().to_string()
@@ -22,7 +21,7 @@ pub fn diff(expr: &str) -> String {
 //  - A wrapper that helps to implement `TryFrom` for binary operations which might simplify to
 //  generic expressions
 
-#[derive(Clone, Copy, strum_macros::Display, Debug, EnumString)]
+#[derive(Clone, Copy, strum::Display, Debug, EnumString)]
 #[strum(serialize_all = "lowercase")]
 enum Func {
     Sin,
@@ -32,7 +31,7 @@ enum Func {
     Ln,
 }
 
-#[derive(Clone, Copy, strum_macros::Display, Debug, EnumString, PartialEq)]
+#[derive(Clone, Copy, strum::Display, Debug, EnumString, PartialEq)]
 enum Op {
     #[strum(serialize = "+")]
     Add,
