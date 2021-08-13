@@ -3,11 +3,13 @@ use regex::Regex;
 use std::{
     borrow::Borrow,
     convert::{TryFrom, TryInto},
-    fmt::{Display, Write},
+    fmt::Display,
     ops::{Add, BitXor, Deref, Div, Mul, Neg, Shr, Sub},
     rc::Rc,
     str::FromStr,
 };
+use strum::ParseError::VariantNotFound;
+use strum_macros::EnumString;
 
 pub fn diff(expr: &str) -> String {
     expr.parse().and_then(Expr::into_diff).unwrap().to_string()
@@ -20,7 +22,8 @@ pub fn diff(expr: &str) -> String {
 //  - A wrapper that helps to implement `TryFrom` for binary operations which might simplify to
 //  generic expressions
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, strum_macros::Display, Debug, EnumString)]
+#[strum(serialize_all = "lowercase")]
 enum Func {
     Sin,
     Cos,
@@ -29,12 +32,17 @@ enum Func {
     Ln,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, strum_macros::Display, Debug, EnumString, PartialEq)]
 enum Op {
+    #[strum(serialize = "+")]
     Add,
+    #[strum(serialize = "-")]
     Sub,
+    #[strum(serialize = "*")]
     Mul,
+    #[strum(serialize = "/")]
     Div,
+    #[strum(serialize = "^")]
     Pow,
 }
 
@@ -79,37 +87,6 @@ struct ExprRc(Rc<Expr>);
 struct SimplifiedBinary(Expr);
 
 // Expression parsing implementations
-// TODO: Automatically derive string patterns from enum variants.
-
-impl FromStr for Func {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "sin" => Ok(Self::Sin),
-            "cos" => Ok(Self::Cos),
-            "tan" => Ok(Self::Tan),
-            "exp" => Ok(Self::Exp),
-            "ln" => Ok(Self::Ln),
-            _ => Err(format!("Failed to parse a function name from '{}'", s)),
-        }
-    }
-}
-
-impl FromStr for Op {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "+" => Ok(Self::Add),
-            "-" => Ok(Self::Sub),
-            "*" => Ok(Self::Mul),
-            "/" => Ok(Self::Div),
-            "^" => Ok(Self::Pow),
-            _ => Err(format!("Failed to parse a binary operator from '{}'", s)),
-        }
-    }
-}
 
 fn split_operands(args: &str) -> Option<(&str, &str)> {
     if !args.starts_with('(') {
@@ -136,7 +113,9 @@ impl TryFrom<(&str, &str)> for SimplifiedBinary {
     fn try_from(value: (&str, &str)) -> Result<Self, Self::Error> {
         let (lhs, rhs) = split_operands(value.1)
             .ok_or(format!("Failed to separate operands from '{}", value.1))?;
-        let op = value.0.parse()?;
+        let op = value.0.parse().map_err(|VariantNotFound| {
+            format!("Failed to parse a binary operator from '{}'", value.0)
+        })?;
         let lhs = lhs.parse::<Expr>()?;
         let rhs = rhs.parse::<Expr>()?;
         // Note: Simplify here so that we don't have to deal with `Rc`s inside `OpExpr` later
@@ -150,7 +129,9 @@ impl TryFrom<(&str, &str)> for FuncExpr {
 
     fn try_from(value: (&str, &str)) -> Result<Self, Self::Error> {
         Ok(Self {
-            f: value.0.parse()?,
+            f: value.0.parse().map_err(|VariantNotFound| {
+                format!("Failed to parse a function name from '{}'", value.0)
+            })?,
             arg: value.1.parse().map(Rc::new)?,
         })
     }
@@ -327,25 +308,6 @@ impl IntoDiff for Expr {
 }
 
 // Display implementations
-
-impl Display for Func {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(format!("{:?}", self).to_lowercase().as_str())
-    }
-}
-
-impl Display for Op {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let op = match self {
-            Self::Add => '+',
-            Self::Sub => '-',
-            Self::Mul => '*',
-            Self::Div => '/',
-            Self::Pow => '^',
-        };
-        f.write_char(op)
-    }
-}
 
 impl Display for Expr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

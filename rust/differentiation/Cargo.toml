@@ -10,3 +10,5 @@ edition = "2018"
 [dependencies]
 lazy_static = "1.4"
 regex = "1.5"
+strum = "0.21"
+strum_macros = "0.21"
