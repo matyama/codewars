@@ -119,7 +119,7 @@ impl TryFrom<(&str, &str)> for SimplifiedBinary {
         let rhs = rhs.parse::<Expr>()?;
         // Note: Simplify here so that we don't have to deal with `Rc`s inside `OpExpr` later
         let expr = (op, lhs, rhs).valid()?.simplify();
-        Ok(SimplifiedBinary(expr))
+        Ok(Self(expr))
     }
 }
 
@@ -381,12 +381,8 @@ where
             (Add | Sub, _, Const(c)) if approx!(c, 0) => lhs.into(),
             (Add, Const(c), _) if approx!(c, 0) => rhs.into(),
             (Mul, Const(c), _) if approx!(c, 1) => rhs.into(),
-            (Mul, _, Const(c)) | (Div, _, Const(c)) | (Pow, _, Const(c)) if approx!(c, 1) => {
-                lhs.into()
-            }
-            (Mul, Const(c), _) | (Mul, _, Const(c)) | (Div, Const(c), _) if approx!(c, 0) => {
-                0.into()
-            }
+            (Mul | Div | Pow, _, Const(c)) if approx!(c, 1) => lhs.into(),
+            (Mul | Div, Const(c), _) | (Mul, _, Const(c)) if approx!(c, 0) => 0.into(),
             (Pow, _, Const(c)) if approx!(c, 0) => 1.into(),
             // Unfortunately `if let` guards are not stable yet and one can't match on `Rc`
             (Mul, Const(a), Binary(div)) | (Mul, Binary(div), Const(a)) if div.op == Div => {
