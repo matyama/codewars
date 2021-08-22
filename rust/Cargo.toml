@@ -20,6 +20,7 @@ members = [
     "product-fib",
     "simple-graph",
     "snail",
+    "spiralize",
     "validate-sudoku",
 ]
 

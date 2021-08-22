@@ -3,6 +3,9 @@
 ## 2 kyu
 * [Symbolic differentiation of prefix expressions](https://www.codewars.com/kata/584daf7215ac503d5a0001ae)
 
+## 3 kyu
+* [Make a spiral](https://www.codewars.com/kata/534e01fbbb17187c7e0000c6)
+
 ## 4 kyu
 * [Algebraic Lists](https://www.codewars.com/kata/529a92d9aba78c356b000353)
 * [Getting along with Integer Partitions](https://www.codewars.com/kata/55cf3b567fc0e02b0b00000b)

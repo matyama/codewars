@@ -1,0 +1,9 @@
+[package]
+name = "spiralize"
+description = "https://www.codewars.com/kata/534e01fbbb17187c7e0000c6"
+homepage = "https://github.com/matyama/codewars"
+readme = "../README.md"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
