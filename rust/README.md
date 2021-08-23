@@ -5,6 +5,7 @@
 
 ## 3 kyu
 * [Make a spiral](https://www.codewars.com/kata/534e01fbbb17187c7e0000c6)
+* [Screen Locking Patterns](https://www.codewars.com/kata/585894545a8a07255e0002f1)
 
 ## 4 kyu
 * [Algebraic Lists](https://www.codewars.com/kata/529a92d9aba78c356b000353)

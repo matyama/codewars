@@ -18,6 +18,7 @@ members = [
     "population-growth",
     "prime-factors",
     "product-fib",
+    "screen-patterns",
     "simple-graph",
     "snail",
     "spiralize",
