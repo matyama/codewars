@@ -1,15 +1,20 @@
 def fib(n: int) -> int:
-    """Calculates the nth Fibonacci number in O(n) time"""
-
+    """
+    Calculates the n-th Fibonacci number in O(log(n)) time.
+    See: [Exercise 1.19](https://bit.ly/3Bhv2JR)
+    """
     if n < 0:
         fib_neg = fib(-n)
         return fib_neg if (1 - n) % 2 == 0 else -fib_neg
 
-    fib_nn, fib_n = 0, 1
+    a, b, p, q = 1, 0, 0, 1
 
-    for _ in range(2, n + 1):
-        tmp = fib_n
-        fib_n += fib_nn
-        fib_nn = tmp
+    while n:
+        if n % 2 == 0:
+            p, q = (p ** 2 + q ** 2), (q ** 2 + 2 * p * q)
+            n //= 2
+        else:
+            a, b = (b * q + a * p + a * q), (b * p + a * q)
+            n -= 1
 
-    return fib_n if n > 0 else fib_nn
+    return b
