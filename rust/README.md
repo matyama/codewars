@@ -1,6 +1,7 @@
 # Rust Kata
 
 ## 2 kyu
+* [Evaluate mathematical expression](https://www.codewars.com/kata/52a78825cdfc2cfc87000005)
 * [Symbolic differentiation of prefix expressions](https://www.codewars.com/kata/584daf7215ac503d5a0001ae)
 
 ## 3 kyu

@@ -12,7 +12,7 @@ mod tests {
     use super::*;
     use float_eq::float_eq;
 
-    #[allow(non_fmt_panic)]
+    #[allow(non_fmt_panics)]
     fn assert_float_equals(actual: f64, expected: f64) {
         let merr = 1.0e-12;
         let res =

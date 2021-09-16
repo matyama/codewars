@@ -1,0 +1,15 @@
+[package]
+name = "eval-expression"
+description = "https://www.codewars.com/kata/52a78825cdfc2cfc87000005"
+homepage = "https://github.com/matyama/codewars"
+readme = "../README.md"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+anyhow = "1.0"
+lazy_static = "1.4"
+regex = "1.5"
+rstest = "0.11"
+strum = { version = "0.21", features = ["derive"] }
+thiserror = "1.0"
