@@ -51,15 +51,27 @@ struct FuncExpr {
     arg: Rc<Expr>,
 }
 
-impl FuncExpr {
-    #[inline]
-    fn with<E>(&self, f: Func) -> E
+trait Of {
+    type Expr;
+    type OutExpr;
+
+    fn of(self, expr: &Self::Expr) -> Self::OutExpr
     where
-        E: From<Self>,
+        Self::Expr: Into<Self::OutExpr>;
+}
+
+impl Of for Func {
+    type Expr = FuncExpr;
+    type OutExpr = ExprRc;
+
+    #[inline]
+    fn of(self, expr: &Self::Expr) -> Self::OutExpr
+    where
+        Self::Expr: Into<Self::OutExpr>,
     {
-        Self {
-            f,
-            arg: self.arg.clone(),
+        Self::Expr {
+            f: self,
+            arg: expr.arg.clone(),
         }
         .into()
     }
@@ -209,11 +221,11 @@ impl Diff for FuncExpr {
         }
 
         let df = match self.f {
-            Sin => Ok(self.with(Cos)),
-            Cos => Ok(-self.with::<Self::OutExpr>(Sin)),
-            Tan => Self::OutExpr::from(1) / (self.with::<Self::OutExpr>(Cos) ^ 2.into()),
+            Sin => Ok(Cos.of(self)),
+            Cos => Ok(-Sin.of(self)),
+            Tan => 1 / (Cos.of(self) ^ 2),
             Exp => Ok(self.into()),
-            Ln => Self::OutExpr::from(1) / self.arg.clone().into(),
+            Ln => 1 / Self::OutExpr::from(self.arg.clone()),
         }?;
 
         // Apply the chain rule
@@ -251,13 +263,13 @@ impl Diff for OpExpr {
             Div => {
                 let df = f.diff()?;
                 let dg = g.diff()?;
-                let g2 = g.clone() ^ 2.into();
+                let g2 = g.clone() ^ 2;
                 ((df * g) - (f * dg)) / g2
             }
             Pow => {
                 let df = match (f.borrow(), g.borrow()) {
                     (Const(_), _) => Self::OutExpr::from((Pow, f.0.clone(), g.0)) * (Ln, &f).into(),
-                    (_, Const(a)) => Self::OutExpr::from(*a) * (f.clone() ^ (a - 1.0).into()),
+                    (_, Const(a)) => *a * (f.clone() ^ (a - 1.0)),
                     (f, g) => {
                         return Err(format!(
                             "Can't diff '(^ {} {})', only forms supported are a^x and x^a",
@@ -413,46 +425,73 @@ impl Neg for ExprRc {
     }
 }
 
-impl Add for ExprRc {
-    type Output = Self;
+#[macro_export]
+macro_rules! impl_op {
+    ($op:ident<$t:ty> => $f:ident@$trait:ident) => {
+        impl $trait for $t {
+            type Output = Self;
 
-    fn add(self, rhs: Self) -> Self::Output {
-        (Op::Add, self.0, rhs.0).simplify()
-    }
+            #[inline]
+            fn $f(self, rhs: Self) -> Self::Output {
+                (Op::$op, self.0, rhs.0).simplify()
+            }
+        }
+    };
+
+    ($op:ident<$t:ty> => $f:ident) => {
+        impl_op!($op<$t> => $f@$op);
+    };
 }
 
-impl Sub for ExprRc {
-    type Output = Self;
+impl_op!(Add<ExprRc> => add);
+impl_op!(Sub<ExprRc> => sub);
+impl_op!(Mul<ExprRc> => mul);
+impl_op!(Pow<ExprRc> => bitxor@BitXor);
 
-    fn sub(self, rhs: Self) -> Self::Output {
-        (Op::Sub, self.0, rhs.0).simplify()
-    }
-}
+impl Mul<ExprRc> for f64 {
+    type Output = ExprRc;
 
-impl Mul for ExprRc {
-    type Output = Self;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        (Op::Mul, self.0, rhs.0).simplify()
+    #[inline]
+    fn mul(self, rhs: ExprRc) -> Self::Output {
+        ExprRc::from(self) * rhs
     }
 }
 
 impl Div for ExprRc {
     type Output = Result<Self, String>;
 
+    #[inline]
     fn div(self, rhs: Self) -> Self::Output {
         Ok((Op::Div, self.0, rhs.0).valid()?.simplify())
     }
 }
 
-// Note that here we interpret x^a as taking x to the a-th power.
-impl BitXor for ExprRc {
-    type Output = Self;
+impl Div<ExprRc> for i8 {
+    type Output = Result<ExprRc, String>;
 
-    fn bitxor(self, rhs: Self) -> Self::Output {
-        (Op::Pow, self.0, rhs.0).simplify()
+    #[inline]
+    fn div(self, rhs: ExprRc) -> Self::Output {
+        ExprRc::from(self) / rhs
     }
 }
+
+// Note that here we interpret x^a as taking x to the a-th power.
+#[macro_export]
+macro_rules! impl_bitxor_expr {
+    ($t:ty) => {
+        impl BitXor<$t> for ExprRc {
+            type Output = Self;
+
+            #[inline]
+            fn bitxor(self, rhs: $t) -> Self::Output {
+                self ^ Self::from(rhs)
+            }
+        }
+    };
+}
+
+impl_bitxor_expr!(i8);
+impl_bitxor_expr!(f64);
 
 // Note that we interpret `self >> rhs` as the chain rule:
 // `d(rhs)/dx * self` where `self` is assumed to be the derivative of an outer function
