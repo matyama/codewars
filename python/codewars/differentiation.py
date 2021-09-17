@@ -68,7 +68,7 @@ class Unary(Fn, ABC, UnaryMeta):
     @classmethod
     def new(cls, fn: str, arg: Expr) -> "Unary":
         if fn not in cls._funcs:
-            raise ValueError("Unsupported function {fn}".format(fn=fn))
+            raise ValueError(f"Unsupported function {fn}")
 
         return cls._funcs[fn](arg)
 
@@ -83,9 +83,7 @@ class Unary(Fn, ABC, UnaryMeta):
         return self._diff().chain(inner=self.arg)
 
     def __str__(self) -> str:
-        return "({fn} {arg})".format(
-            fn=self.__class__.__name__.lower(), arg=self.arg
-        )
+        return f"({self.__class__.__name__.lower()} {self.arg})"
 
 
 @dataclass(frozen=True)
@@ -161,7 +159,7 @@ class Binary(Fn, BinaryMeta):
     @classmethod
     def new(cls, op: str, arg1: Expr, arg2: Expr) -> "Binary":
         if op not in cls._ops:
-            raise ValueError("Unsupported operation {op}".format(op=op))
+            raise ValueError(f"Unsupported operation {op}")
 
         return cls._ops[op](arg1, arg2)
 
@@ -179,7 +177,7 @@ class Binary(Fn, BinaryMeta):
         return self._diff()
 
     def __str__(self) -> str:
-        return "({op} {x} {y})".format(op=self._op, x=self.arg1, y=self.arg2)
+        return f"({self._op} {self.arg1} {self.arg2})"
 
 
 @dataclass(frozen=True)
@@ -264,9 +262,7 @@ class Div(Binary, op="/"):
         if isinstance(arg1, Const) and arg1.value == 0:
             return Const(0)
         if isinstance(arg2, Const) and arg2.value == 0:
-            raise ZeroDivisionError(
-                "(/ {arg1} {arg2})".format(arg1=arg1, arg2=arg2)
-            )
+            raise ZeroDivisionError(f"(/ {arg1} {arg2})")
         return cls(arg1, arg2)
 
     def _diff(self) -> Expr:
