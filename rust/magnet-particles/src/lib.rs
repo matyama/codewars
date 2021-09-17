@@ -10,30 +10,25 @@ pub fn doubles(maxk: i32, maxn: i32) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use float_eq::float_eq;
+    use float_eq::assert_float_eq;
+    use rstest::*;
 
-    #[allow(non_fmt_panics)]
-    fn assert_float_equals(actual: f64, expected: f64) {
-        let merr = 1.0e-12;
-        let res =
-            float_eq!(actual, expected, abs <= merr) || float_eq!(actual, expected, rmax <= merr);
-        assert!(
-            res,
-            format!(
-                "Expected value must be near: {:e} but was:{:e}",
-                expected, actual
-            )
+    const TOL: f64 = 1.0e-12;
+
+    #[rstest]
+    #[case(1, 10, 0.5580321939764581)]
+    #[case(10, 1000, 0.6921486500921933)]
+    #[case(10, 10000, 0.6930471674194457)]
+    fn it_works(#[case] maxk: i32, #[case] maxn: i32, #[case] expected: f64) {
+        let actual = doubles(maxk, maxn);
+        assert_float_eq!(
+            actual,
+            expected,
+            abs <= TOL,
+            rmax <= TOL,
+            "Expected value must be near: {:e} but was: {:e}",
+            expected,
+            actual
         );
-    }
-
-    fn dotest(maxk: i32, maxn: i32, exp: f64) -> () {
-        assert_float_equals(doubles(maxk, maxn), exp);
-    }
-
-    #[test]
-    fn basic_tests_doubles() {
-        dotest(1, 10, 0.5580321939764581);
-        dotest(10, 1000, 0.6921486500921933);
-        dotest(10, 10000, 0.6930471674194457);
     }
 }

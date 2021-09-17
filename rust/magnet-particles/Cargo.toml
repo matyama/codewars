@@ -10,3 +10,4 @@ edition = "2018"
 [dependencies]
 float_eq = "0.6.0"
 itertools = "0.10.0"
+rstest = "0.11"

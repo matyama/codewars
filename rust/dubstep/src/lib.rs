@@ -8,12 +8,14 @@ pub fn song_decoder(song: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::song_decoder;
+    use rstest::*;
 
-    #[test]
-    fn returns_expected() {
-        assert_eq!(song_decoder("WUBAWUBWUBC"), "A C");
-        assert_eq!(song_decoder("AWUBWUBWUBBWUBWUBWUBC"), "A B C");
-        assert_eq!(song_decoder("WUBAWUBBWUBCWUB"), "A B C");
-        assert_eq!(song_decoder("AWUBBWUBC"), "A B C");
+    #[rstest]
+    #[case("WUBAWUBWUBC", "A C")]
+    #[case("AWUBWUBWUBBWUBWUBWUBC", "A B C")]
+    #[case("WUBAWUBBWUBCWUB", "A B C")]
+    #[case("AWUBBWUBC", "A B C")]
+    fn returns_expected(#[case] song: &str, #[case] exprected: &str) {
+        assert_eq!(song_decoder(song), exprected);
     }
 }

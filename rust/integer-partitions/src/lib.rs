@@ -78,17 +78,15 @@ pub fn part(n: i64) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::*;
 
-    fn testequal(ans: &str, sol: &str) {
-        assert!(ans == sol, "Expected \"{}\", got \"{}\".", sol, ans);
-    }
-
-    #[test]
-    fn returns_expected() {
-        testequal(&part(1), "Range: 0 Average: 1.00 Median: 1.00");
-        testequal(&part(2), "Range: 1 Average: 1.50 Median: 1.50");
-        testequal(&part(3), "Range: 2 Average: 2.00 Median: 2.00");
-        testequal(&part(4), "Range: 3 Average: 2.50 Median: 2.50");
-        testequal(&part(5), "Range: 5 Average: 3.50 Median: 3.50");
+    #[rstest]
+    #[case(1, "Range: 0 Average: 1.00 Median: 1.00")]
+    #[case(2, "Range: 1 Average: 1.50 Median: 1.50")]
+    #[case(3, "Range: 2 Average: 2.00 Median: 2.00")]
+    #[case(4, "Range: 3 Average: 2.50 Median: 2.50")]
+    #[case(5, "Range: 5 Average: 3.50 Median: 3.50")]
+    fn it_works(#[case] n: i64, #[case] expected: &str) {
+        assert_eq!(&part(n), expected);
     }
 }

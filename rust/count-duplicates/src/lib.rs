@@ -12,19 +12,13 @@ pub fn count_duplicates(text: &str) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::*;
 
-    #[test]
-    fn test_abcde() {
-        assert_eq!(count_duplicates("abcde"), 0);
-    }
-
-    #[test]
-    fn test_abcdea() {
-        assert_eq!(count_duplicates("abcdea"), 1);
-    }
-
-    #[test]
-    fn test_indivisibility() {
-        assert_eq!(count_duplicates("indivisibility"), 1);
+    #[rstest]
+    #[case::abcde("abcde", 0)]
+    #[case::abcdea("abcdea", 1)]
+    #[case::indivisibility("indivisibility", 1)]
+    fn it_works(#[case] text: &str, #[case] exprected: u32) {
+        assert_eq!(count_duplicates(text), exprected);
     }
 }

@@ -49,21 +49,13 @@ fn prime_factors(num: i64) -> HashMap<i64, i64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::*;
 
-    fn testing(l: Vec<i64>, exp: Vec<(i64, i64)>) -> () {
-        assert_eq!(sum_of_divided(l), exp)
-    }
-
-    #[test]
-    fn basics_sum_of_divided() {
-        testing(vec![12, 15], vec![(2, 12), (3, 27), (5, 15)]);
-        testing(
-            vec![15, 21, 24, 30, 45],
-            vec![(2, 54), (3, 135), (5, 90), (7, 21)],
-        );
-        testing(
-            vec![15, 21, 24, 30, -45],
-            vec![(2, 54), (3, 45), (5, 0), (7, 21)],
-        );
+    #[rstest]
+    #[case(vec![12, 15], vec![(2, 12), (3, 27), (5, 15)])]
+    #[case(vec![15, 21, 24, 30, 45], vec![(2, 54), (3, 135), (5, 90), (7, 21)])]
+    #[case(vec![15, 21, 24, 30, -45], vec![(2, 54), (3, 45), (5, 0), (7, 21)])]
+    fn basics_sum_of_divided(#[case] l: Vec<i64>, #[case] expected: Vec<(i64, i64)>) {
+        assert_eq!(sum_of_divided(l), expected);
     }
 }

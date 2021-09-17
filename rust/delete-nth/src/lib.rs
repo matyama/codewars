@@ -13,13 +13,12 @@ pub fn delete_nth(lst: &[u8], n: usize) -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::*;
 
-    #[test]
-    fn test_basic() {
-        assert_eq!(delete_nth(&[20, 37, 20, 21], 1), vec![20, 37, 21]);
-        assert_eq!(
-            delete_nth(&[1, 1, 3, 3, 7, 2, 2, 2, 2], 3),
-            vec![1, 1, 3, 3, 7, 2, 2, 2]
-        );
+    #[rstest]
+    #[case(&[20, 37, 20, 21], 1, &[20, 37, 21])]
+    #[case(&[1, 1, 3, 3, 7, 2, 2, 2, 2], 3, &[1, 1, 3, 3, 7, 2, 2, 2])]
+    fn it_works(#[case] lst: &[u8], #[case] n: usize, #[case] expected: &[u8]) {
+        assert_eq!(delete_nth(lst, n), expected);
     }
 }

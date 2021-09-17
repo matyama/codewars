@@ -15,14 +15,12 @@ pub fn product_fib(prod: u64) -> (u64, u64, bool) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::*;
 
-    fn dotest(prod: u64, exp: (u64, u64, bool)) {
-        assert_eq!(product_fib(prod), exp)
-    }
-
-    #[test]
-    fn basics_product_fib() {
-        dotest(4895, (55, 89, true));
-        dotest(5895, (89, 144, false));
+    #[rstest]
+    #[case(4895, (55, 89, true))]
+    #[case(5895, (89, 144, false))]
+    fn basics_product_fib(#[case] prod: u64, #[case] expected: (u64, u64, bool)) {
+        assert_eq!(product_fib(prod), expected);
     }
 }

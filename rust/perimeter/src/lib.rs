@@ -8,17 +8,15 @@ pub fn perimeter(n: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::*;
 
-    fn dotest(n: u64, exp: u64) -> () {
-        assert_eq!(perimeter(n), exp)
-    }
-
-    #[test]
-    fn basics_perimeter() {
-        dotest(4, 48);
-        dotest(5, 80);
-        dotest(7, 216);
-        dotest(20, 114624);
-        dotest(30, 14098308);
+    #[rstest]
+    #[case(4, 48)]
+    #[case(5, 80)]
+    #[case(7, 216)]
+    #[case(20, 114624)]
+    #[case(30, 14098308)]
+    fn basics_perimeter(#[case] n: u64, #[case] expected: u64) {
+        assert_eq!(perimeter(n), expected);
     }
 }

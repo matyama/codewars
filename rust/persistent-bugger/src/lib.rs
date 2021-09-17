@@ -17,12 +17,15 @@ pub fn persistence(num: u64) -> u64 {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use rstest::*;
 
-    #[test]
-    fn sample_tests() {
-        assert_eq!(super::persistence(39), 3);
-        assert_eq!(super::persistence(4), 0);
-        assert_eq!(super::persistence(25), 2);
-        assert_eq!(super::persistence(999), 4);
+    #[rstest]
+    #[case(39, 3)]
+    #[case(4, 0)]
+    #[case(25, 2)]
+    #[case(999, 4)]
+    fn sample_tests(#[case] num: u64, #[case] exprected: u64) {
+        assert_eq!(persistence(num), exprected);
     }
 }

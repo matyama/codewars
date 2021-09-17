@@ -13,39 +13,30 @@ pub fn in_array(arr_a: &[&str], arr_b: &[&str]) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::*;
 
-    #[test]
-    fn examples() {
-        assert_eq!(
-            in_array(
-                &["xyz", "live", "strong"],
-                &["lively", "alive", "harp", "sharp", "armstrong"],
-            ),
-            ["live", "strong"]
-        );
-
-        assert_eq!(
-            in_array(
-                &["live", "strong", "arp"],
-                &["lively", "alive", "harp", "sharp", "armstrong"],
-            ),
-            ["arp", "live", "strong"]
-        );
-
-        assert_eq!(
-            in_array(
-                &["tarp", "mice", "bull"],
-                &["lively", "alive", "harp", "sharp", "armstrong"],
-            ),
-            [] as [&str; 0]
-        );
-
-        assert_eq!(
-            in_array(
-                &["live", "strong", "arp", "arp"],
-                &["lively", "alive", "harp", "sharp", "armstrong"],
-            ),
-            ["arp", "live", "strong"]
-        );
+    #[rstest]
+    #[case(
+        &["xyz", "live", "strong"],
+        &["lively", "alive", "harp", "sharp", "armstrong"],
+        &["live", "strong"],
+    )]
+    #[case(
+        &["live", "strong", "arp"],
+        &["lively", "alive", "harp", "sharp", "armstrong"],
+        &["arp", "live", "strong"],
+    )]
+    #[case(
+        &["tarp", "mice", "bull"],
+        &["lively", "alive", "harp", "sharp", "armstrong"],
+        &[],
+    )]
+    #[case(
+        &["live", "strong", "arp", "arp"],
+        &["lively", "alive", "harp", "sharp", "armstrong"],
+        &["arp", "live", "strong"],
+    )]
+    fn it_works(#[case] arr_a: &[&str], #[case] arr_b: &[&str], #[case] expected: &[&str]) {
+        assert_eq!(in_array(arr_a, arr_b), expected);
     }
 }
