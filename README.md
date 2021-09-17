@@ -9,7 +9,7 @@ Solutions of [Codewars](https://codewars.com/) Kata
 1. Rust - 4 kyu
 1. Haskell - 6 kyu
 
-## Implemented Kata
+## Solved Kata
 * [Python](python/README.md)
 * [Rust](rust/README.md)
 * [Haskell](haskell/README.md)
