@@ -304,10 +304,7 @@ impl IntoIterator for Tokens {
 
 #[cfg(test)]
 mod tests {
-
-    use crate::{Error, Eval};
-
-    use super::calc;
+    use super::*;
     use rstest::*;
 
     // Wrap custom message to reduce repitition

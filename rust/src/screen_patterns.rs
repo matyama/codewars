@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate lazy_static;
-
 const N: usize = 9;
 
 lazy_static! {

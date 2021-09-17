@@ -1,28 +1,21 @@
-[workspace]
-members = [
-    "algebraic-lists",
-    "best-travel",
-    "bouncing-balls",
-    "caa-stats",
-    "count-duplicates",
-    "delete-nth",
-    "differentiation",
-    "dubstep",
-    "eval-expression",
-    "in-array",
-    "integer-partitions",
-    "magnet-particles",
-    "molecule",
-    "parts-sums",
-    "perimeter",
-    "persistent-bugger",
-    "population-growth",
-    "prime-factors",
-    "product-fib",
-    "screen-patterns",
-    "simple-graph",
-    "snail",
-    "spiralize",
-    "validate-sudoku",
-]
+[package]
+name = "codewars"
+description = "Rust solutions to Codewards Kata"
+homepage = "https://github.com/matyama/codewars"
+readme = "README.md"
+version = "0.1.0"
+license = "MIT"
+edition = "2018"
 
+[dependencies]
+anyhow = "1.0"
+chrono = "0.4"
+itertools = "0.10"
+lazy_static = "1.4"
+regex = "1.5"
+strum = { version = "0.21", features = ["derive"] }
+thiserror = "1.0"
+
+[dev-dependencies]
+float_eq = "0.6"
+rstest = "0.11"
