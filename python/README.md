@@ -17,6 +17,9 @@
   * Implements *A** with *Manhattan distance* heuristic to find the
     shortest path in a *gridworld* environment
   * Implemented in module [`grid_path`](codewars/grid_path.py)
+* [Huffman Encoding](https://www.codewars.com/kata/54cf7f926b85dcc4e2000d9d)
+  * Implements[*Huffman coding*](https://en.wikipedia.org/wiki/Huffman_coding)
+  * Implemented in module [`huffman`](codewars/huffman.py)
 * [The Millionth Fibonacci](https://www.codewars.com/kata/53d40c1e2f13e331fc000c26)
   * Calculates the n-th *Fibonacci number* in `O(log(n))` time
   * Implemented in module [`fibonacci`](codewars/fibonacci.py)

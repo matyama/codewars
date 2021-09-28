@@ -28,6 +28,7 @@ flake8-comprehensions = "*"
 flake8-isort = "*"
 flake8-mutable = "*"
 flake8-pytest = "*"
+hypothesis = "*"
 mypy = "*"
 pylint = "*"
 pytest = "^5.2"
@@ -68,8 +69,8 @@ ignore_missing_imports = true
 
 [tool.pylint.basic]
 good-names="""
-    a,b,c,d,e,f,g,h,i,j,k,m,n,p,q,r,s,t,v,w,x,y,z,
-    N,at,df,ex,fn,ls,of,op,pk,pq,xs,x1,x2,ys,y1,y2,
+    a,b,c,d,e,f,g,h,i,j,k,m,n,p,q,r,s,t,v,w,x,y,z,N,
+    at,df,ex,fn,fs,ls,lq,nq,of,op,pk,pq,xs,x1,x2,ys,y1,y2,
     Run,_
 """
 
