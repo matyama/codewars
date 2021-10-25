@@ -16,15 +16,22 @@ spec = do
 
 
   describe "frequencies" $ do
-    it "frequencies for identity test should be correct"
+    it "frequencies for two symbols should be correct"
       $          frequencies "*3"
       `shouldBe` [('*', 1), ('3', 1)]
+    it "frequencies for three symbols should be correct"
+      $          frequencies "\ENQO\DEL"
+      `shouldBe` [('\ENQ', 1), ('O', 1), ('\DEL', 1)]
 
   describe "encoding" $ do
     it "encoding of two equally frequent symbols should be trivial"
       $ let symbols = "*3"
             freqs   = frequencies symbols
         in  encode freqs symbols `shouldBe` Just [O, Z]
+    it "encoding of three equally frequent symbols should be trivial"
+      $ let symbols = "\ENQO\DEL"
+            freqs   = frequencies symbols
+        in  encode freqs symbols `shouldBe` Just [Z, O, Z, Z, O]
 
   describe "decoding" $ do
     it "decoding of two equally frequent symbols should be trivial"
@@ -33,7 +40,7 @@ spec = do
         in  decode freqs [O, Z] `shouldBe` Just symbols
 
   describe "identity" $ do
-    it "decoding after encoding should be noop"
+    it "decoding after encoding should be noop (2 symbols)"
       $ let symbols = "*3"
             freqs   = frequencies symbols
             enc     = encode freqs
@@ -42,6 +49,14 @@ spec = do
               code <- enc symbols
               dec code
             `shouldBe` Just symbols
+    it "decoding after encoding should be noop (3 symbols)"
+      $ let symbols = "\ENQO\DEL"
+            freqs   = frequencies symbols
+        in  do
+              code <- encode freqs symbols
+              decode freqs code
+            `shouldBe` Just symbols
+
 
   describe "length" $ do
     it "equal lengths with same frequencies if alphabet size is a power of two"

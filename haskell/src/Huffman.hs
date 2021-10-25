@@ -83,7 +83,7 @@ encode freqs symbols = concat <$> traverse encodeSymbol symbols
 coding :: Ord a => Tree a -> Map a [Bit]
 coding t = M.fromList (collect t [] [])
  where
-  collect Leaf { symbol = s } bs items = (s, bs) : items
+  collect Leaf { symbol = s } bs items = (s, reverse bs) : items
   collect Node { left = l, right = r } bs items =
     collect l (O : bs) (collect r (Z : bs) items)
 
