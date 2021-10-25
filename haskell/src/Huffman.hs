@@ -94,7 +94,7 @@ decode [_]   _    = Nothing
 decode freqs bits = Just (decodeBits bits tree)
  where
   tree = huffmanTree freqs
-  decodeBits []       _                   = []
   decodeBits bs       Leaf { symbol = s } = s : decodeBits bs tree
   decodeBits (O : bs) Node { left = l }   = decodeBits bs l
   decodeBits (Z : bs) Node { right = r }  = decodeBits bs r
+  decodeBits []       _                   = []

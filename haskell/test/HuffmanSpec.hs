@@ -14,6 +14,35 @@ spec = do
             it "empty list encode" $ encode fs [] `shouldBe` Just []
             it "empty list decode" $ decode fs [] `shouldBe` Just []
 
+
+  describe "frequencies" $ do
+    it "frequencies for identity test should be correct"
+      $          frequencies "*3"
+      `shouldBe` [('*', 1), ('3', 1)]
+
+  describe "encoding" $ do
+    it "encoding of two equally frequent symbols should be trivial"
+      $ let symbols = "*3"
+            freqs   = frequencies symbols
+        in  encode freqs symbols `shouldBe` Just [O, Z]
+
+  describe "decoding" $ do
+    it "decoding of two equally frequent symbols should be trivial"
+      $ let symbols = "*3"
+            freqs   = frequencies symbols
+        in  decode freqs [O, Z] `shouldBe` Just symbols
+
+  describe "identity" $ do
+    it "decoding after encoding should be noop"
+      $ let symbols = "*3"
+            freqs   = frequencies symbols
+            enc     = encode freqs
+            dec     = decode freqs
+        in  do
+              code <- enc symbols
+              dec code
+            `shouldBe` Just symbols
+
   describe "length" $ do
     it "equal lengths with same frequencies if alphabet size is a power of two"
       $ let enc = encode [('a', 1), ('b', 1)]
