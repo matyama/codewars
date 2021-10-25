@@ -1,5 +1,10 @@
 # Haskell Kata
 
+## 3 kyu
+* [Huffman Encoding](https://www.codewars.com/kata/54cf7f926b85dcc4e2000d9d)
+  * Implements[*Huffman coding*](https://en.wikipedia.org/wiki/Huffman_coding)
+  * Implemented in module [`Huffman`](src/Huffman.hs)
+
 ## 5 kyu
 * [Don't Drink the Water](https://www.codewars.com/kata/562e6df5cf2d3908ad00019e)
   * 2D list manipulation, `chunksOf`, `foldr` and pattern matching

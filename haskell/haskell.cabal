@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0c36d524a1afe01645884f8275e2517e1d70944c3de1765d05420e9aadbef4fe
+-- hash: bcc18b9ee0aa751a9ca893035aa3cb54cbefbfc4994090da12672a737c8df77e
 
 name:           haskell
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
       DontDrinkTheWater
       Dups
       HighestScoringWord
+      Huffman
       Josephus
       Longestconsec
       Maskify
@@ -45,6 +46,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , containers
     , split
   default-language: Haskell2010
 
@@ -56,6 +58,7 @@ test-suite haskell-test
       DontDrinkTheWaterSpec
       DupsSpec
       HighestScoringWordSpec
+      HuffmanSpec
       JosephusSpec
       LongestconsecSpec
       MaskifySpec
@@ -69,6 +72,7 @@ test-suite haskell-test
   build-depends:
       QuickCheck
     , base >=4.7 && <5
+    , containers
     , haskell
     , hspec
     , split

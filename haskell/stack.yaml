@@ -3,7 +3,9 @@
 resolver: lts-16.31
 
 ghc-options:
-  haskell: -Wno-type-defaults
+  haskell:
+    -O2
+    -Wno-type-defaults
 
 packages:
 - .
