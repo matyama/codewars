@@ -54,8 +54,7 @@ class UnaryMeta:
 
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
-        # https://github.com/python/mypy/issues/4660
-        super().__init_subclass__(**kwargs)  # type: ignore
+        super().__init_subclass__(**kwargs)
         # This method is called on subclasses and since `cls` is a subclass of
         # `UnaryMeta` which is only used as a base for `Unary`, this is safe.
         cls._funcs[cls.__name__.lower()] = cast("Type[Unary]", cls)
@@ -128,8 +127,7 @@ class BinaryMeta:
     def __init_subclass__(
         cls, /, op: Optional[str] = None, **kwargs: Any
     ) -> None:
-        # https://github.com/python/mypy/issues/4660
-        super().__init_subclass__(**kwargs)  # type: ignore
+        super().__init_subclass__(**kwargs)
         # This method is called on subclasses and since `cls` is a subclass of
         # `BinaryMeta` which is only used as a base for `Binary`, this is safe.
         if op is not None:
