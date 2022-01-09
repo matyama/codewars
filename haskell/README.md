@@ -4,6 +4,12 @@
 * [Huffman Encoding](https://www.codewars.com/kata/54cf7f926b85dcc4e2000d9d)
   * Implements[*Huffman coding*](https://en.wikipedia.org/wiki/Huffman_coding)
   * Implemented in module [`Huffman`](src/Huffman.hs)
+* [Isomorphism](https://www.codewars.com/kata/5922543bf9c15705d0000020)
+  * Definition of an [*isomorphism*](https://en.wikipedia.org/wiki/Isomorphism)
+  * Validation of properties of isomorphisms: equivalence relation,
+    lifting to a `Functor` and `Bifunctor`, lowering isomorphisms over
+    `Maybe` and evidence of the impossibility to lower from an `Either`
+  * Implemented in module [`ISO`](src/ISO.hs)
 
 ## 5 kyu
 * [Don't Drink the Water](https://www.codewars.com/kata/562e6df5cf2d3908ad00019e)

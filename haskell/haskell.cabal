@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bcc18b9ee0aa751a9ca893035aa3cb54cbefbfc4994090da12672a737c8df77e
+-- hash: e9b8e95706f29864a5ed03cc992b0c8602c65da36777504db1510aaf1c393cfa
 
 name:           haskell
 version:        0.1.0.0
@@ -34,6 +34,7 @@ library
       Dups
       HighestScoringWord
       Huffman
+      ISO
       Josephus
       Longestconsec
       Maskify
@@ -59,6 +60,7 @@ test-suite haskell-test
       DupsSpec
       HighestScoringWordSpec
       HuffmanSpec
+      ISOSpec
       JosephusSpec
       LongestconsecSpec
       MaskifySpec
