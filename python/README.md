@@ -10,7 +10,7 @@
 ## 3 kyu
 * [Binomial Expansion](https://www.codewars.com/kata/540d0fdd3b6532e5c3000b5b)
   * Expands an expression of the form `(ax+b)^n` using the [*Binomial formula*](https://en.wikipedia.org/wiki/Binomial_theorem)
-  * Implemented in module [`binomial_expansion`](codewars/binmial_expansion.py)
+  * Implemented in module [`binomial_expansion`](codewars/binomial_expansion.py)
 * [Closest pair of points in linearithmic time](https://www.codewars.com/kata/5376b901424ed4f8c20002b7)
   * Finds the [closest pair of points](https://en.wikipedia.org/wiki/Closest_pair_of_points_problem)
     in a list of `n` 2D points in `O(n*log(n))` time
