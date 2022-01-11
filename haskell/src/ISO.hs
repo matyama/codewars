@@ -7,6 +7,9 @@ import           Data.Maybe                     ( fromJust
 import           Data.Bifunctor                 ( bimap
                                                 , Bifunctor
                                                 )
+import           Data.Profunctor                ( dimap
+                                                , Profunctor
+                                                )
 import           Data.Tuple                     ( swap )
 import           Data.Void
 
@@ -100,6 +103,16 @@ isoTuple = isoBifunctor
 isoEither :: ISO a b -> ISO c d -> ISO (Either a c) (Either b d)
 isoEither = isoBifunctor
 
+-- | Two isomorphisms lifted to an 'ISO' over an arbitrary 'Profunctor':
+--   ```haskell
+--   isoProfunctor
+--    :: (a -> b, b -> a)
+--    -> (c -> d, d -> c)
+--    -> (f a c -> f b d, f b d -> f a c)
+--   ```
+isoProfunctor :: Profunctor f => ISO a b -> ISO c d -> ISO (f a c) (f b d)
+isoProfunctor (ab, ba) (cd, dc) = (dimap ba cd, dimap ab dc)
+
 -- | Function isomorphism:
 --   ```haskell
 --   isoFunc
@@ -108,7 +121,7 @@ isoEither = isoBifunctor
 --    -> (a -> c -> b -> d, b -> d -> a -> c)
 --   ```
 isoFunc :: ISO a b -> ISO c d -> ISO (a -> c) (b -> d)
-isoFunc (ab, ba) (cd, dc) = (\ac -> cd . ac . ba, \bd -> dc . bd . ab)
+isoFunc = isoProfunctor
 
 -- | Unwrapping an isomorphism on effects (here 'Maybe') is hard and generally
 --   impossible.

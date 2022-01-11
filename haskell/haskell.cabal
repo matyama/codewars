@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e9b8e95706f29864a5ed03cc992b0c8602c65da36777504db1510aaf1c393cfa
+-- hash: 1db3c34b1d0c198351fe27ca2ab0d8734ccfe0e5968ca98fd5a8477b03a9622a
 
 name:           haskell
 version:        0.1.0.0
@@ -29,6 +29,7 @@ source-repository head
 
 library
   exposed-modules:
+      AlgebraicISO
       CamelCase
       DontDrinkTheWater
       Dups
@@ -48,6 +49,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , profunctors
     , split
   default-language: Haskell2010
 
@@ -55,6 +57,7 @@ test-suite haskell-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      AlgebraicISOSpec
       CamelCaseSpec
       DontDrinkTheWaterSpec
       DupsSpec
@@ -77,5 +80,6 @@ test-suite haskell-test
     , containers
     , haskell
     , hspec
+    , profunctors
     , split
   default-language: Haskell2010

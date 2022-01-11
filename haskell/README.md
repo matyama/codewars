@@ -1,5 +1,13 @@
 # Haskell Kata
 
+## 2 kyu
+* [Algebraic Isomorphism](https://www.codewars.com/kata/5917f22dd2563a36a200009c)
+  * Implements bunch of algebraic rules which give the name to
+    [*Algebraic Data Types*](https://en.wikipedia.org/wiki/Algebraic_data_type)
+  * Algebraic rules are satisfied by ADTs under *isomorphism*
+  * This is a follow-up to the *Isomorphism* kata and is implemented in
+    module [`AlgebraicISO`](src/AlgebraicISO.hs)
+
 ## 3 kyu
 * [Huffman Encoding](https://www.codewars.com/kata/54cf7f926b85dcc4e2000d9d)
   * Implements[*Huffman coding*](https://en.wikipedia.org/wiki/Huffman_coding)

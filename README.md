@@ -7,7 +7,7 @@ Solutions of [Codewars](https://codewars.com/) Kata
 [**3 kyu** overall](https://www.codewars.com/users/matyama)
 1. Python - 3 kyu
 1. Rust - 4 kyu
-1. Haskell - 5 kyu
+1. Haskell - 4 kyu
 
 ## Solved Kata
 * [Python](python/README.md)
