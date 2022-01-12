@@ -33,6 +33,12 @@
 * [Magnet particles in boxes](https://www.codewars.com/kata/56c04261c3fcf33f2d000534)
   * Simple transformation and aggregation over an `Iterator`
   * Implemented in module [`magnet_particles`](src/magnet_particles.rs)
+* [Recover a secret string from random triplets](https://www.codewars.com/kata/53f40dff5f9d31b813000774)
+  * Decodes a text from triplets of letters that define a precedence
+    relation on their unique occurrence in the secret message
+  * Implements [*topological sort*](https://en.wikipedia.org/wiki/Topological_sorting)
+    on the graph of symbol precedences
+  * Implemented in module [`recover_secret`](src/recover_secret.rs)
 * [Snail](https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1)
   * Produces spiral trail visiting all elements of given matrix
   * Implemented in module [`snail`](src/snail.rs)

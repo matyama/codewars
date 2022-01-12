@@ -20,6 +20,7 @@ pub mod persistent_bugger;
 pub mod population_growth;
 pub mod prime_factors;
 pub mod product_fib;
+pub mod recover_secret;
 pub mod screen_patterns;
 pub mod simple_graph;
 pub mod snail;
