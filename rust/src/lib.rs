@@ -8,6 +8,7 @@ pub mod caa_stats;
 pub mod count_duplicates;
 pub mod delete_nth;
 pub mod differentiation;
+pub mod double_linear;
 pub mod dubstep;
 pub mod eval_expression;
 pub mod in_array;

@@ -46,6 +46,12 @@
   * Collects all *prime factors* of numbers in a given list and
 		aggregates sum of respective numbers for each prime factor
   * Implemented in module [`prime_factors`](src/prime_factors.rs)
+* [Twice linear](https://www.codewars.com/kata/5672682212c8ecf83e000050)
+  * Finds the nth item of an ordered set that is closed on two linear
+    transformations of its elements
+  * This implementation runs in `O(n*log(n))` time but could be improved
+    to `O(n)` (see other solutions)
+  * Implemented in module [`double_linear`](src/double_linear.rs)
 * [Validate Sudoku with size `NxN`](https://www.codewars.com/kata/540afbe2dc9f615d5e000425)
   * Sudoku board validator
   * Implemented in module [`validate_sudoku`](src/validate_sudoku.rs)
