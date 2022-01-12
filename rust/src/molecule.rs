@@ -202,6 +202,7 @@ mod tests {
         let result = parse_molecule(formula);
         assert!(
             result.is_err(),
+            "{}",
             format!(
                 "expected {} {:?} to fail, got {:?}",
                 msg,
@@ -220,6 +221,7 @@ mod tests {
         let result = parse_molecule(formula);
         assert!(
             result.is_ok(),
+            "{}",
             format!("expected {:?} to pass, got {:?}", formula, result)
         );
         let mut actual = result.unwrap();
