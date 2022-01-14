@@ -19,6 +19,12 @@
     `Maybe` and evidence of the impossibility to lower from an `Either`
   * Implemented in module [`ISO`](src/ISO.hs)
 
+## 4 kyu
+* [Twice linear](https://www.codewars.com/kata/5672682212c8ecf83e000050)
+  * Finds the nth item of an ordered set that is closed on two linear
+    transformations of its elements in `O(n)` time
+  * Implemented in module [`DblLinear`](src/DblLinear.hs)
+
 ## 5 kyu
 * [Don't Drink the Water](https://www.codewars.com/kata/562e6df5cf2d3908ad00019e)
   * 2D list manipulation, `chunksOf`, `foldr` and pattern matching

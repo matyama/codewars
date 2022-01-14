@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1db3c34b1d0c198351fe27ca2ab0d8734ccfe0e5968ca98fd5a8477b03a9622a
+-- hash: 5be09f1c41e4ed6da170ac37fbc57e9a97d1bf2357a366c3d5e43bdf997f6396
 
 name:           haskell
 version:        0.1.0.0
@@ -31,6 +31,7 @@ library
   exposed-modules:
       AlgebraicISO
       CamelCase
+      DblLinear
       DontDrinkTheWater
       Dups
       HighestScoringWord
@@ -59,6 +60,7 @@ test-suite haskell-test
   other-modules:
       AlgebraicISOSpec
       CamelCaseSpec
+      DblLinearSpec
       DontDrinkTheWaterSpec
       DupsSpec
       HighestScoringWordSpec
