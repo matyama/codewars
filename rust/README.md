@@ -33,6 +33,11 @@
 * [Magnet particles in boxes](https://www.codewars.com/kata/56c04261c3fcf33f2d000534)
   * Simple transformation and aggregation over an `Iterator`
   * Implemented in module [`magnet_particles`](src/magnet_particles.rs)
+* [Path Finder #1: can you reach the exit?](https://www.codewars.com/kata/5765870e190b1472ec0022a2)
+  * Checks if there is a path between two locations in a 2D grid maze
+  * Implements simplified version of [(Weighted) A* algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm)
+    with a Manhattan distance heuristic
+  * Implemented in module [`path_finder`](src/path_finder.rs)
 * [Recover a secret string from random triplets](https://www.codewars.com/kata/53f40dff5f9d31b813000774)
   * Decodes a text from triplets of letters that define a precedence
     relation on their unique occurrence in the secret message

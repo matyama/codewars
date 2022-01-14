@@ -16,6 +16,7 @@ pub mod integer_partitions;
 pub mod magnet_particles;
 pub mod molecule;
 pub mod parts_sums;
+pub mod path_finder;
 pub mod perimeter;
 pub mod persistent_bugger;
 pub mod population_growth;
