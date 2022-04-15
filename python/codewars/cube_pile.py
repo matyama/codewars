@@ -4,7 +4,7 @@ def find_nb(m: int) -> int:
     total = 0
 
     while total < m:
-        total += n ** 3
+        total += n**3
         n += 1
 
     return -1 if total > m else n - 1

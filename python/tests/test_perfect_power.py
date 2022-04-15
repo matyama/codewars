@@ -51,14 +51,14 @@ def test_random_perfect_powers() -> None:
         m = 2 + floor(random() * 255)
         k = 2 + floor(random() * log(268435455) / log(m))
 
-        n = m ** k
+        n = m**k
         result = isPP(n)
 
         if result is None:
             assert result is not None
 
         res_m, res_k = result
-        res_n = res_m ** res_k
+        res_n = res_m**res_k
         if res_n != n:
             assert res_n == n
 
@@ -69,4 +69,4 @@ def test_valid_pairs_for_random_inputs() -> None:
         result = isPP(n)
         if result is not None:
             m, k = result
-            assert m ** k == n
+            assert m**k == n

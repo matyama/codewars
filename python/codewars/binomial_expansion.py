@@ -52,13 +52,13 @@ def expand(expr: str) -> str:
         return f"+{t}" if unary_plus and c > 0 else t
 
     if a == 0:
-        return str(b ** n)
+        return str(b**n)
 
     if b == 0:
-        return term(k=0, c=a ** n)
+        return term(k=0, c=a**n)
 
     def coef(k: int) -> int:
-        return cast(int, comb(n, k) * (a ** (n - k)) * (b ** k))
+        return cast(int, comb(n, k) * (a ** (n - k)) * (b**k))
 
     coefs = map(coef, range(n + 1))
     return "".join(term(k, c, unary_plus=k > 0) for k, c in enumerate(coefs))

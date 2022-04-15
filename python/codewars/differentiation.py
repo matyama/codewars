@@ -277,7 +277,7 @@ class Div(Binary, op="/"):
 class Pow(Binary, op="^"):
     @classmethod
     def _eval(cls, x: Const, y: Const) -> Const:
-        return Const(x.value ** y.value)
+        return Const(x.value**y.value)
 
     @classmethod
     def _apply(cls, arg1: Expr, arg2: Expr) -> Expr:

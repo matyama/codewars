@@ -11,7 +11,7 @@ def fib(n: int) -> int:
 
     while n:
         if n % 2 == 0:
-            p, q = (p ** 2 + q ** 2), (q ** 2 + 2 * p * q)
+            p, q = (p**2 + q**2), (q**2 + 2 * p * q)
             n //= 2
         else:
             a, b = (b * q + a * p + a * q), (b * p + a * q)
