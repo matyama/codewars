@@ -11,17 +11,17 @@ keywords = ["codewars", "python", "algorithms"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
-    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.10",
     "Operating System :: Unix",
     "Topic :: Software Development :: Libraries",
     "Typing :: Typed",
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 
 [tool.poetry.dev-dependencies]
-black = "^22.3.0"
+black = "*"
 flake8 = "*"
 flake8-black = "*"
 flake8-comprehensions = "*"
@@ -31,12 +31,12 @@ flake8-pytest = "*"
 hypothesis = "*"
 mypy = "*"
 pylint = "*"
-pytest = "^5.2"
+pytest = "*"
 pytest-timeouts = "*"
 
 [tool.black]
 line-length = 79
-target-version = ['py38']
+target-version = ['py310']
 skip-string-normalization = true
 
 [tool.isort]
@@ -47,7 +47,7 @@ include_trailing_comma = true
 [tool.mypy]
 cache_dir = "/dev/null"
 ignore_missing_imports = false
-python_version = 3.8
+python_version = "3.10"
 
 # equivalent to --strict except for the modifications above:
 disallow_untyped_calls = true

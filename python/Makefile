@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := all
 
 install:
-	poetry env use python3.8
+	poetry env use python3.10
 	poetry install
 
 fmt:

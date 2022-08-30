@@ -1,6 +1,6 @@
-from typing import List, Union
+from typing import List
 
-Num = Union[int, float]
+Num = int | float
 Matrix = List[List[Num]]
 
 
@@ -9,17 +9,14 @@ def minor(matrix: Matrix, pos: int) -> Matrix:
 
 
 def determinant(matrix: Matrix) -> Num:
-
-    n = len(matrix)
-
-    if n == 1:
-        return matrix[0][0]
-
-    if n == 2:
-        (a, b), (c, d) = matrix
-        return a * d - b * c
-
-    return sum(
-        (-1) ** i * matrix[0][i] * determinant(minor(matrix, i))
-        for i in range(n)
-    )
+    match matrix:
+        case [[x]]:
+            return x
+        case [[a, b], [c, d]]:
+            return a * d - b * c
+        case m:
+            det: Num = sum(
+                (-1) ** i * m[0][i] * determinant(minor(m, i))
+                for i in range(len(m))
+            )
+            return det
