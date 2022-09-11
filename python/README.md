@@ -57,6 +57,10 @@
   * Implements [*Dijkstra's SP algorithm*](https://en.wikipedia.org/wiki/Dijkstra's_algorithm)
     ([*Uniform-cost Search*](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#Practical_optimizations_and_infinite_graphs))
   * Implemented in module [`knight_path`](codewars/knight_path.py)
+* [Strongly connected components](https://www.codewars.com/kata/5f74a3b1acfbb20033e5b7d9)
+  * Finds strongly connected components in given directed graph
+  * Implements [*Tarjan's SCC algorithm*](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm)
+  * Implemented in module [`scc`](codewars/scc.py)
 * [The observed PIN](https://www.codewars.com/kata/5263c6999e0f40dee200059d)
   * Finds all possible pins on a numpad given observed sequence where each
     observed digit might be wrong
