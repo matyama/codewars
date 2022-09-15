@@ -95,6 +95,9 @@
   * Implemented in module [`anagrams`](codewars/anagrams.py)
 
 ## 6 kyu
+* [1RM Calculator](https://www.codewars.com/kata/595bbea8a930ac0b91000130)
+  * Calculates projected [*one-repetition maximum (1RM)*](https://en.wikipedia.org/wiki/One-repetition_maximum)
+  * Implemented in module [`rm_calculator`](codewars/rm_calculator.py)
 * [Build a pile of Cubes](https://www.codewars.com/kata/5592e3bd57b64d00f3000047)
   * Calculates no. cubes in hierarchical structure of given its volume
   * Implemented in module [`cube_pile`](codewars/cube_pile.py)
