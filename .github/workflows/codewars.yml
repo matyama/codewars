@@ -79,3 +79,16 @@ jobs:
       run: cargo clippy --all-features -- -D warnings
     - name: Run tests
       run: cargo test --all-features --no-fail-fast
+  
+  sql:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Run sqlfluff with reviewdog
+      uses: yu-iskw/action-sqlfluff@v3.5.0
+      with:
+        working-directory: sql
+        paths: scripts
+        config: .sqlfluff
+        dialect: postgres
