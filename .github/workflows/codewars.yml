@@ -92,3 +92,8 @@ jobs:
         paths: scripts
         config: .sqlfluff
         dialect: postgres
+    - name: 'Show outputs'
+      shell: bash
+      run: |
+        echo '${{ steps.lint-sql.outputs.sqlfluff-results }}' | jq -r '.'
+        echo '${{ steps.lint-sql.outputs.sqlfluff-results-rdjson }}' | jq -r '.'
