@@ -1,0 +1,10 @@
+# cannot parse `@@` operator
+basic_fulltext_search.sql
+# problems with `unnest` with `ORDINALITY` and a subquery in JOIN LATERAL
+count_ip_addresses.sql
+# problems with `regexp_split_to_array` and working with arrays
+subqueries_master.sql
+# parsing problems
+transpose_matrices.sql
+# problems with `CREATE OPERATOR` and weird L003
+vector_addition.sql
