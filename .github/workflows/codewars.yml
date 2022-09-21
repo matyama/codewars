@@ -82,18 +82,17 @@ jobs:
   
   sql:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sql
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Run sqlfluff with reviewdog
-      uses: yu-iskw/action-sqlfluff@v3.5.0
+    - name: Set up Python
+      uses: "actions/setup-python@v2"
       with:
-        working-directory: sql
-        paths: scripts
-        config: .sqlfluff
-        dialect: postgres
-    - name: 'Show outputs'
-      shell: bash
-      run: |
-        echo '${{ steps.lint-sql.outputs.sqlfluff-results }}' | jq -r '.'
-        echo '${{ steps.lint-sql.outputs.sqlfluff-results-rdjson }}' | jq -r '.'
+          python-version: "3.10"
+    - name: Install SQLFluff
+      run: pip install sqlfluff
+    - name: Run lint
+      run: sqlfluff lint scripts
