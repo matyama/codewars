@@ -27,4 +27,5 @@ pub mod screen_patterns;
 pub mod simple_graph;
 pub mod snail;
 pub mod spiralize;
+pub mod sum_intervals;
 pub mod validate_sudoku;

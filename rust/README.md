@@ -51,6 +51,10 @@
   * Collects all *prime factors* of numbers in a given list and
 		aggregates sum of respective numbers for each prime factor
   * Implemented in module [`prime_factors`](src/prime_factors.rs)
+* [Sum of Intervals](https://www.codewars.com/kata/52b7ed099cdc285c300001cd)
+  * Compute the total length of `n` overlapping intervals in
+    `O(n*log(n))` time
+  * Implemented in module [`sum_intervals`](src/sum_intervals.rs)
 * [Twice linear](https://www.codewars.com/kata/5672682212c8ecf83e000050)
   * Finds the nth item of an ordered set that is closed on two linear
     transformations of its elements
