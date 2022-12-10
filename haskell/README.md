@@ -20,6 +20,10 @@
   * Implemented in module [`ISO`](src/ISO.hs)
 
 ## 4 kyu
+* [Sum of Intervals](https://www.codewars.com/kata/52b7ed099cdc285c300001cd)
+  * Compute the total length of `n` overlapping intervals in
+    `O(n*log(n))` time
+  * Implemented in module [`SumOfIntervals`](src/SumOfIntervals.hs)
 * [Twice linear](https://www.codewars.com/kata/5672682212c8ecf83e000050)
   * Finds the nth item of an ordered set that is closed on two linear
     transformations of its elements in `O(n)` time
