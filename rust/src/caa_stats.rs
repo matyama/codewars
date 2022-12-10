@@ -7,7 +7,7 @@ pub fn stati(strg: &str) -> String {
         return strg.into();
     }
 
-    let t0 = NaiveTime::from_hms(0, 0, 0);
+    let t0 = NaiveTime::from_hms_opt(0, 0, 0).unwrap();
 
     let mut ts: Vec<Duration> = strg
         .split(", ")
