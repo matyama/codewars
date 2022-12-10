@@ -15,16 +15,16 @@ jobs:
         working-directory: haskell
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Haskell Stack
-        uses: haskell/actions/setup@v1
+        uses: haskell/actions/setup@v2
         with:
           enable-stack: true
           stack-no-global: true
           stack-version: latest
       - name: Cache Stack
         id: cache-stack
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.stack
@@ -47,13 +47,13 @@ jobs:
         working-directory: python
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: "3.10"
     - name: Set up Poetry
-      uses: abatilo/actions-poetry@v2.1.0
+      uses: abatilo/actions-poetry@v2
       with:
         poetry-version: 1.2.0
     - name: Install dependencies
@@ -72,7 +72,7 @@ jobs:
         working-directory: rust
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Build
       run: cargo build --verbose
     - name: Run checks
@@ -87,9 +87,9 @@ jobs:
         working-directory: sql
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python
-      uses: "actions/setup-python@v2"
+      uses: "actions/setup-python@v4"
       with:
           python-version: "3.10"
     - name: Install SQLFluff
