@@ -61,6 +61,10 @@
   * Finds strongly connected components in given directed graph
   * Implements [*Tarjan's SCC algorithm*](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm)
   * Implemented in module [`scc`](codewars/scc.py)
+* [Sum of Intervals](https://www.codewars.com/kata/52b7ed099cdc285c300001cd)
+  * Compute the total length of `n` overlapping intervals in
+    `O(n*log(n))` time
+  * Implemented in module [`sum_intervals`](codewars/sum_intervals.py)
 * [The observed PIN](https://www.codewars.com/kata/5263c6999e0f40dee200059d)
   * Finds all possible pins on a numpad given observed sequence where each
     observed digit might be wrong

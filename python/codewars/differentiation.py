@@ -60,7 +60,7 @@ class UnaryMeta:
         cls._funcs[cls.__name__.lower()] = cast("Type[Unary]", cls)
 
 
-@dataclass(frozen=True)  # type: ignore
+@dataclass(frozen=True)
 class Unary(Fn, ABC, UnaryMeta):
     arg: Expr
 
@@ -135,7 +135,7 @@ class BinaryMeta:
             cls._op = op
 
 
-@dataclass(frozen=True)  # type: ignore
+@dataclass(frozen=True)
 class Binary(Fn, BinaryMeta):
     arg1: Expr
     arg2: Expr
