@@ -60,6 +60,10 @@
   * Implements [*Dijkstra's SP algorithm*](https://en.wikipedia.org/wiki/Dijkstra's_algorithm)
     ([*Uniform-cost Search*](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#Practical_optimizations_and_infinite_graphs))
   * Implemented in module [`knight_path`](codewars/knight_path.py)
+* [Sort binary tree by levels](https://www.codewars.com/kata/52bef5e3588c56132c0003bc)
+  * Traverses given tree in BFS order yielding its values
+  * Implements [*Breadth-first search*](https://en.wikipedia.org/wiki/Breadth-first_search)
+  * Implemented in module [`tree_by_levels`](codewars/tree_by_levels.py)
 * [Strongly connected components](https://www.codewars.com/kata/5f74a3b1acfbb20033e5b7d9)
   * Finds strongly connected components in given directed graph
   * Implements [*Tarjan's SCC algorithm*](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm)
