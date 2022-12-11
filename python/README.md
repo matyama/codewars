@@ -46,6 +46,9 @@
   * Computes the *determinant* of given square matrix via the
     [*Laplace expansion*](https://en.wikipedia.org/wiki/Laplace_expansion)
   * Implemented in module [`determinant`](codewars/determinant.py)
+* [parseInt() reloaded](https://www.codewars.com/kata/525c7c5ab6aecef16e0001a5)
+  * Converts given string representing a number in words into an integer
+  * Implemented in module [`parse_int`](codewars/parse_int.py)
 * [Range Extraction](https://www.codewars.com/kata/51ba717bb08c1cd60f00002f)
   * Format a list of integers and shorten it by replacing consecutive
     sequences by a range
