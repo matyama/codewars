@@ -28,4 +28,5 @@ pub mod simple_graph;
 pub mod snail;
 pub mod spiralize;
 pub mod sum_intervals;
+pub mod tree_levels;
 pub mod validate_sudoku;

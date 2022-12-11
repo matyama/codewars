@@ -47,6 +47,10 @@
 * [Snail](https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1)
   * Produces spiral trail visiting all elements of given matrix
   * Implemented in module [`snail`](src/snail.rs)
+* [Sort binary tree by levels](https://www.codewars.com/kata/52bef5e3588c56132c0003bc)
+  * Traverses given tree in BFS order yielding its values
+  * Implements [*Breadth-first search*](https://en.wikipedia.org/wiki/Breadth-first_search)
+  * Implemented in module [`tree_levels`](src/tree_levels.rs)
 * [Sum by Factors](https://www.codewars.com/kata/54d496788776e49e6b00052f)
   * Collects all *prime factors* of numbers in a given list and
 		aggregates sum of respective numbers for each prime factor
