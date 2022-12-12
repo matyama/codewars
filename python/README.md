@@ -87,6 +87,12 @@
 * [Human Readable Time](https://www.codewars.com/kata/52685f7382004e774f0001f7)
   * Converts given number of seconds into a string in `HH:MM:SS` format
   * Implemented in module [`readable_time`](codewars/readable_time.py)
+* [Intro to Statistics - Part 1: A Five figure summary](https://www.codewars.com/kata/555c7fa8d8cb57834a000028)
+  * Computes the
+    [five-number summary](https://en.wikipedia.org/wiki/Five-number_summary)
+    over a series of samples
+  * The usage of `numpy`/`pandas` is disallowed for this Kata
+  * Implemented in module [`five_figure_summary`](codewars/five_figure_summary.py)
 * [Number of trailing zeros of N!](https://www.codewars.com/kata/52f787eb172a8b4ae1000a34)
   * Computes the number of trailing zeros in `n!` without evaluating it
   * Implemented in module [`factorial_zeros`](codewars/factorial_zeros.py)
