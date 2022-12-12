@@ -64,6 +64,10 @@
   * Traverses given tree in BFS order yielding its values
   * Implements [*Breadth-first search*](https://en.wikipedia.org/wiki/Breadth-first_search)
   * Implemented in module [`tree_by_levels`](codewars/tree_by_levels.py)
+* [Strip Comments](https://www.codewars.com/kata/51c8e37cee245da6b40000bd)
+  * Strips end of line comments from given text and a set of comment
+    markers
+  * Implemented in module [`strip_comments`](codewars/strip_comments.py)
 * [Strongly connected components](https://www.codewars.com/kata/5f74a3b1acfbb20033e5b7d9)
   * Finds strongly connected components in given directed graph
   * Implements [*Tarjan's SCC algorithm*](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm)
