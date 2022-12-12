@@ -20,6 +20,10 @@
   * Implemented in module [`ISO`](src/ISO.hs)
 
 ## 4 kyu
+* [Sort binary tree by levels](https://www.codewars.com/kata/52bef5e3588c56132c0003bc)
+  * Traverses given tree in BFS order yielding its values
+  * Implements [*Breadth-first search*](https://en.wikipedia.org/wiki/Breadth-first_search)
+  * Implemented in module [`TreeByLevels`](src/TreeByLevels.hs)
 * [Sum of Intervals](https://www.codewars.com/kata/52b7ed099cdc285c300001cd)
   * Compute the total length of `n` overlapping intervals in
     `O(n*log(n))` time
