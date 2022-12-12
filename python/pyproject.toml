@@ -70,7 +70,7 @@ ignore_missing_imports = true
 [tool.pylint.basic]
 good-names="""
     a,b,c,d,e,f,g,h,i,j,k,m,n,p,q,r,s,t,v,w,x,y,z,N,
-    at,df,ex,fn,fs,ls,lq,nq,of,op,pk,pq,q1,q3,ts,xs,x1,x2,ys,y1,y2,
+    at,df,ex,fn,fs,ls,lq,mu,nq,of,op,pk,pq,q1,q3,ts,xs,x1,x2,ys,y1,y2,
     Run,_
 """
 

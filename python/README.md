@@ -93,6 +93,10 @@
     over a series of samples
   * The usage of `numpy`/`pandas` is disallowed for this Kata
   * Implemented in module [`five_figure_summary`](codewars/five_figure_summary.py)
+* [Mean without outliers](https://www.codewars.com/kata/5962d557be3f8bb0ca000010)
+  * Computes the mean of given sample stripped from outliers defined as
+    a multiple of standard deviations form the sample mean.
+  * Implemented in module [`clean_mean`](codewars/clean_mean.py)
 * [Number of trailing zeros of N!](https://www.codewars.com/kata/52f787eb172a8b4ae1000a34)
   * Computes the number of trailing zeros in `n!` without evaluating it
   * Implemented in module [`factorial_zeros`](codewars/factorial_zeros.py)
