@@ -88,6 +88,10 @@
   * Producing consecutive Fibonacci numbers until a condition on their
 		product
   * Implemented in module [`product_fib`](src/product_fib.rs)
+* [Sum of Pairs](https://www.codewars.com/kata/54d81488b981293527000c8f)
+  * Find pair of integers which sums up to given value in sub-quadratic
+    time
+  * Implemented in module [`sum_pairs`](src/sum_pairs.rs)
 
 ## 6 kyu
 * [Bouncing Ball](https://www.codewars.com/kata/5544c7a5cb454edb3c000047)
