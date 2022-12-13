@@ -76,6 +76,13 @@
   * Compute the total length of `n` overlapping intervals in
     `O(n*log(n))` time
   * Implemented in module [`sum_intervals`](codewars/sum_intervals.py)
+* [The learning game - Machine Learning #1](https://www.codewars.com/kata/5695995cc26a1e90fe00004d)
+  * Implements a machine which learns how to respond to a set of
+    commands by selecting correct action to handle them
+  * Implements a simple greedy actor for deterministic environments and
+    [(Bernoulli) MAB](https://en.wikipedia.org/wiki/Multi-armed_bandit)
+    (**UCB-1**) for stochastic environments/actions
+  * Implemented in module [`learning_game`](codewars/learning_game.py)
 * [The observed PIN](https://www.codewars.com/kata/5263c6999e0f40dee200059d)
   * Finds all possible pins on a numpad given observed sequence where each
     observed digit might be wrong
