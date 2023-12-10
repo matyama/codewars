@@ -4,7 +4,6 @@ from codewars.meeting import meeting
 
 # pylint: disable=line-too-long
 def test_meeting() -> None:
-
     cases = [
         (
             "Alexis:Wahl;John:Bell;Victoria:Schwarz;Abba:Dorny;Grace:Meta;Ann:Arno;Madison:STAN;Alex:Cornwell;Lewis:Kern;Megan:Stan;Alex:Korn",

@@ -80,7 +80,6 @@ class HuffmanTree:
             return lq if lq[0].weight <= nq[0].weight else nq
 
         while len(leafs) + len(nodes) > 1:
-
             left = min_queue(leafs, nodes).popleft()
             if isinstance(left, Leaf):
                 leaf_refs[left.symbol] = left

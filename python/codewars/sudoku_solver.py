@@ -23,7 +23,6 @@ def sudoku(puzzle: List[List[int]]) -> List[List[int]]:
     constraints = defaultdict(set)
 
     for i in range(N):
-
         # Values in each row must all be different
         row_vars = ((i, col) for col in range(N))
         for x, y in combinations(row_vars, 2):
@@ -58,7 +57,6 @@ def sudoku(puzzle: List[List[int]]) -> List[List[int]]:
         domains: Dict[Variable, Domain],
         remaining: Set[Variable],
     ) -> Optional[Dict[Variable, Domain]]:
-
         domains = {x: set(dx) for x, dx in domains.items()}
         domains[var] = {val}
 
@@ -81,7 +79,6 @@ def sudoku(puzzle: List[List[int]]) -> List[List[int]]:
         remaining: Set[Variable],
         domains: Dict[Variable, Domain],
     ) -> Optional[Dict[Variable, int]]:
-
         if not remaining:
             return assignment
 
@@ -90,7 +87,6 @@ def sudoku(puzzle: List[List[int]]) -> List[List[int]]:
         remaining.remove(var)
 
         for val in domains[var]:
-
             # Check if assignment var := val is consistent
             if all(val != assignment.get(x) for x in constraints[var]):
                 assignment[var] = val

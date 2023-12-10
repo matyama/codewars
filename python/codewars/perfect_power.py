@@ -14,13 +14,11 @@ def exp(m: int, k: int) -> int:
 
 # pylint: disable=invalid-name
 def isPP(n: int) -> Optional[List[int]]:
-
     log2_n = (len(bin(n)) - 2) + 1
 
     # Search over k: k < log(n) + 1
     #  - TODO: It is sufficient to check only primes
     for k in range(2, log2_n):
-
         # Binary Search for m: m^k = n
         #  - i.e. k*log(m) = log(n) => log(m) = log(n) / k
 
@@ -28,7 +26,6 @@ def isPP(n: int) -> Optional[List[int]]:
         high_m = 1 << (log2_n // k + 1)
 
         while low_m < high_m - 1:
-
             m = (low_m + high_m) >> 1
             m_pow_k = exp(m, k)
 

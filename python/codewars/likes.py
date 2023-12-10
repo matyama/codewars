@@ -2,7 +2,6 @@ from typing import Sequence
 
 
 def likes(names: Sequence[str]) -> str:
-
     names = ['no one'] if not names else names
 
     if len(names) < 2:

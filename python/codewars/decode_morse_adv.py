@@ -5,7 +5,6 @@ CHAR_SEP = ' '
 
 
 def time_unit(bits: str) -> int:
-
     if '0' not in bits:
         return len(bits)
 
@@ -32,7 +31,6 @@ def time_unit(bits: str) -> int:
 
 
 def decode_bits(bits: str) -> str:
-
     # Get rid of leading and trailing 0s
     bits = bits.strip('0')
 

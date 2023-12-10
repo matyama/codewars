@@ -289,7 +289,6 @@ class Pow(Binary, op="^"):
         return cls(arg1, arg2)
 
     def _diff(self) -> Expr:
-
         # Case (exponential): a^f(x)
         if isinstance(self.arg1, Const):
             df = Mul.apply(
@@ -313,7 +312,6 @@ class Pow(Binary, op="^"):
 
 
 def parse(expression: str) -> Expr:
-
     if expression.startswith("("):
         expression = expression[1:-1]
 
@@ -326,7 +324,6 @@ def parse(expression: str) -> Expr:
     op, args = expr[0], expr[1]
 
     if op in "+-*/^":
-
         if not args.startswith("("):
             expr1, _, expr2 = args.partition(" ")
         elif not args.endswith(")"):

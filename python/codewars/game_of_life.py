@@ -58,7 +58,6 @@ def count_alive(i: int, j: int, cells: Grid) -> int:
 
 
 def get_generation(cells: Grid, generations: int) -> Grid:
-
     for _ in range(generations):
         grid = inflate(cells)
         height, width = len(grid), len(grid[0])
@@ -66,7 +65,6 @@ def get_generation(cells: Grid, generations: int) -> Grid:
 
         for i in range(height):
             for j in range(width):
-
                 n_alive = count_alive(i, j, cells)
 
                 if grid[i][j] == LIVE:

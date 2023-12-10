@@ -21,7 +21,6 @@ def eliminate(ranks: Sequence[int]) -> List[int]:
 
 
 def tourney(inp: Sequence[int]) -> List[List[int]]:
-
     prev = 0
     rounds = [list(inp)]
 

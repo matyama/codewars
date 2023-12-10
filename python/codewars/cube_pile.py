@@ -1,5 +1,4 @@
 def find_nb(m: int) -> int:
-
     n = 1
     total = 0
 

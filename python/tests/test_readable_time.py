@@ -2,7 +2,6 @@ from codewars.readable_time import make_readable
 
 
 def test_make_readable() -> None:
-
     cases = [
         (0, "00:00:00"),
         (5, "00:00:05"),

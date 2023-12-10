@@ -25,7 +25,6 @@ def find_min(pairs: Iterable[Tuple[Pair, float]]) -> Tuple[Pair, float]:
 # pylint: disable=too-many-locals
 def closest_pair(points: Sequence[Point]) -> Sequence[Point]:
     def find_closest(xs: List[Point], ys: List[Point]) -> Tuple[Pair, float]:
-
         # Brute-force search for closest pair if current set of points is small
         if len(xs) <= 3:
             return find_min((pair, dist(pair)) for pair in combinations(xs, 2))

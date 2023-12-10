@@ -21,7 +21,6 @@ def tree_by_levels(node: Tree) -> list[int]:
     values = []
 
     while queue:
-
         n = queue.popleft()
         values.append(n.value)
 

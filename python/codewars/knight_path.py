@@ -45,7 +45,6 @@ def expand(pos: Position) -> Iterable[Position]:
 
 
 def knight(src: str, dst: str) -> int:
-
     init, goal = Position.at(src), Position.at(dst)
 
     pq: List[List] = []
