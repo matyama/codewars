@@ -1,4 +1,4 @@
-WITH RECURSIVE fib(fn_prev, fn) AS (
+WITH RECURSIVE fib (fn_prev, fn) AS (
     SELECT
         0::bigint AS fn_prev,
         1::bigint AS fn

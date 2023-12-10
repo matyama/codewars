@@ -21,16 +21,16 @@ SELECT
     c.credit_limit AS old_limit,
     p.credit_limit AS new_limit
 FROM (
-        SELECT
-            *,
-            normalize(concat(first_name, ' ', last_name)) AS norm_name
-        FROM customers
+    SELECT
+        *,
+        normalize(concat(first_name, ' ', last_name)) AS norm_name
+    FROM customers
 ) AS c
 LEFT OUTER JOIN (
-        SELECT
-            normalize(p.full_name) AS norm_name,
-            max(p.credit_limit) AS credit_limit
-        FROM prospects AS p
-        GROUP BY norm_name
-) AS p ON p.norm_name = c.norm_name
+    SELECT
+        normalize(p.full_name) AS norm_name,
+        max(p.credit_limit) AS credit_limit
+    FROM prospects AS p
+    GROUP BY norm_name
+) AS p ON c.norm_name = p.norm_name
 WHERE p.credit_limit > c.credit_limit
