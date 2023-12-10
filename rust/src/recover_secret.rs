@@ -46,7 +46,8 @@ pub fn recover_secret(triplets: Vec<[char; 3]>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use ntest::timeout;
+    use rstest::*;
+    use std::time::Duration;
 
     use super::*;
 
@@ -75,8 +76,8 @@ mod tests {
     }
 
     // preprocess: 2.215944ms  process: 58.474196225s    decode: 84.084µs
-    #[test]
-    #[timeout(2000)]
+    #[rstest]
+    #[timeout(Duration::from_millis(2000))]
     fn alphabet() {
         #[rustfmt::skip]
         mod data {

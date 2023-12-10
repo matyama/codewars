@@ -4,17 +4,23 @@ use std::{
     str::FromStr,
 };
 
-use strum::{EnumIter, IntoEnumIterator};
-
 /// Represents a position in the maze: (row, col)
 type State = (usize, usize);
 
-#[derive(Debug, EnumIter)]
+#[derive(Clone, Copy, Debug)]
 enum Direction {
     North,
     East,
     South,
     West,
+}
+
+impl Direction {
+    fn iter() -> std::slice::Iter<'static, Direction> {
+        use Direction::*;
+        static DIRECTIONS: [Direction; 4] = [North, East, South, West];
+        DIRECTIONS.iter()
+    }
 }
 
 #[derive(Debug)]
@@ -114,7 +120,7 @@ impl Node {
 
     fn successors<'a>(&'a self, maze: &'a Maze) -> impl Iterator<Item = Self> + 'a {
         Direction::iter()
-            .filter_map(|direction| maze.go(self.state, direction))
+            .filter_map(|&direction| maze.go(self.state, direction))
             .map(|state| Self {
                 state,
                 g: self.g + 1,

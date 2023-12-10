@@ -1,28 +1,28 @@
+use once_cell::sync::Lazy;
+
 const N: usize = 9;
 
-lazy_static! {
-    static ref SKIPS: [[Option<usize>; N]; N] = {
-        let mut skips: [[Option<usize>; N]; N] = [[None; N]; N];
+static SKIPS: Lazy<[[Option<usize>; N]; N]> = Lazy::new(|| {
+    let mut skips: [[Option<usize>; N]; N] = [[None; N]; N];
 
-        for i in 0..N / 2 {
-            // A -- I, B -- H, C -- G and D -- F skips E
-            skips[i][N - i - 1] = Some(N / 2);
-            skips[N - i - 1][i] = Some(N / 2);
+    for i in 0..N / 2 {
+        // A -- I, B -- H, C -- G and D -- F skips E
+        skips[i][N - i - 1] = Some(N / 2);
+        skips[N - i - 1][i] = Some(N / 2);
 
-            if i % 2 == 1 {
-                // A -- C skips B and A -- G skips D
-                skips[0][2 * i] = Some(i);
-                skips[2 * i][0] = Some(i);
+        if i % 2 == 1 {
+            // A -- C skips B and A -- G skips D
+            skips[0][2 * i] = Some(i);
+            skips[2 * i][0] = Some(i);
 
-                // C -- I skips F and G -- I skips H
-                skips[N - 1 - 2 * i][N - 1] = Some(N - i - 1);
-                skips[N - 1][N - 1 - 2 * i] = Some(N - i - 1);
-            }
+            // C -- I skips F and G -- I skips H
+            skips[N - 1 - 2 * i][N - 1] = Some(N - i - 1);
+            skips[N - 1][N - 1 - 2 * i] = Some(N - i - 1);
         }
+    }
 
-        skips
-    };
-}
+    skips
+});
 
 struct Pattern {
     last: usize,

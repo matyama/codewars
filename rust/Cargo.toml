@@ -5,18 +5,29 @@ homepage = "https://github.com/matyama/codewars"
 readme = "README.md"
 version = "0.1.0"
 license = "MIT"
+keywords = ["codewars", "algorithms"]
+categories = ["algorithms"]
 edition = "2021"
 
+# https://docs.codewars.com/languages/rust
+
+[profile.dev]
+opt-level = 1
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.test]
+opt-level = 1
+[profile.test.package."*"]
+opt-level = 3
+
 [dependencies]
-anyhow = "1.0"
 chrono = "0.4"
 itertools = "0.10"
-lazy_static = "1.4"
-regex = "1.5"
-strum = { version = "0.21", features = ["derive"] }
+once_cell = "1.13"
+regex = "1.6"
 thiserror = "1.0"
 
 [dev-dependencies]
-float_eq = "0.6"
-ntest = "0.7"
-rstest = "0.11"
+float_eq = "1.0"
+rstest = "0.18" # Extra dependency to reduce code bloat in tests

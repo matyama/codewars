@@ -1,0 +1,5 @@
+# https://docs.codewars.com/languages/rust
+# NOTE: docs mention 1.62, but the dev container has 1.66
+[toolchain]
+channel = "1.66.1"
+components = ["clippy", "rustfmt", "rust-analyzer"]

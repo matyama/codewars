@@ -1,8 +1,8 @@
-use anyhow::{anyhow, bail, Result};
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use regex::Regex;
 use std::{
     convert::{TryFrom, TryInto},
+    fmt::{Display, Write},
     ops::{Add, Div, Mul, Neg, Sub},
     str::FromStr,
 };
@@ -21,8 +21,8 @@ enum Error {
     ParseFailure(String),
     #[error("Values must be separated by an operator at '{0} {0}'")]
     InvalidValueSeparation(f64, f64),
-    #[error(transparent)]
-    UnknownToken(#[from] strum::ParseError),
+    #[error("Unknown token '{0}'")]
+    UnknownToken(String),
 }
 
 /// Typeclass for types which can be *evaluated*.
@@ -33,7 +33,7 @@ enum Error {
 /// Note: It additionally requires [f64] to be [`Into<V>`](Into) which is due to [Token]
 /// representation of numbers.
 trait Eval {
-    fn eval<V>(self) -> Result<V>
+    fn eval<V>(self) -> Result<V, Error>
     where
         Operator: Apply<V>,
         f64: Into<V>;
@@ -45,7 +45,7 @@ trait Eval {
 ///
 /// All errors are reported as variants of [Error].
 impl Eval for &str {
-    fn eval<V>(self) -> Result<V>
+    fn eval<V>(self) -> Result<V, Error>
     where
         Operator: Apply<V>,
         f64: Into<V>,
@@ -92,7 +92,7 @@ impl Eval for &str {
                         match ops.pop() {
                             Some(OpItem::Op(op)) => op.apply(&mut out)?,
                             Some(OpItem::LeftParenthesis) => break,
-                            None => bail!(Error::MismatchedParentheses(self.to_string())),
+                            None => return Err(Error::MismatchedParentheses(self.to_string())),
                         }
                     }
                 }
@@ -103,34 +103,76 @@ impl Eval for &str {
         while let Some(item) = ops.pop() {
             match item {
                 OpItem::Op(op) => op.apply(&mut out)?,
-                OpItem::LeftParenthesis => bail!(Error::MismatchedParentheses(self.to_string())),
+                OpItem::LeftParenthesis => {
+                    return Err(Error::MismatchedParentheses(self.to_string()))
+                }
             }
         }
 
         // There ought to be at least one item (and if sound then exactly one)
         out.pop()
-            .ok_or_else(|| anyhow!(Error::ParseFailure(self.to_string())))
+            .ok_or_else(|| Error::ParseFailure(self.to_string()))
     }
 }
 
-#[derive(Clone, Copy, Debug, strum::Display, strum::EnumString)]
+#[derive(Clone, Copy, Debug)]
 enum Op {
-    #[strum(serialize = "+")]
     Add,
-    #[strum(serialize = "-")]
     Sub,
-    #[strum(serialize = "*")]
     Mul,
-    #[strum(serialize = "/")]
     Div,
 }
 
-#[derive(Debug, strum::Display, strum::EnumString)]
+impl Display for Op {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_char(match self {
+            Self::Add => '+',
+            Self::Sub => '-',
+            Self::Mul => '*',
+            Self::Div => '/',
+        })
+    }
+}
+
+impl FromStr for Op {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "+" => Ok(Self::Add),
+            "-" => Ok(Self::Sub),
+            "*" => Ok(Self::Mul),
+            "/" => Ok(Self::Div),
+            _ => Err(Error::UnknownToken(s.to_owned())),
+        }
+    }
+}
+
+#[derive(Debug)]
 enum ParenKind {
-    #[strum(serialize = "(")]
     Left,
-    #[strum(serialize = ")")]
     Right,
+}
+
+impl Display for ParenKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_char(match self {
+            Self::Left => '(',
+            Self::Right => ')',
+        })
+    }
+}
+
+impl FromStr for ParenKind {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "(" => Ok(Self::Left),
+            ")" => Ok(Self::Right),
+            _ => Err(Error::UnknownToken(s.to_owned())),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -170,7 +212,7 @@ impl Operator {
 trait Apply<V> {
     /// Applies [Self] to top n (*arity*) values on the `stack` and replaces these arguments on the
     /// stack by the result.
-    fn apply(self, stack: &mut Vec<V>) -> Result<()>;
+    fn apply(self, stack: &mut Vec<V>) -> Result<(), Error>;
 }
 
 // Note: This impl forwards operator application to traits bounding `V` and therefore can work with
@@ -179,13 +221,13 @@ impl<V> Apply<V> for Operator
 where
     V: Neg<Output = V> + Add<Output = V> + Sub<Output = V> + Mul<Output = V> + Div<Output = V>,
 {
-    fn apply(self, stack: &mut Vec<V>) -> Result<()> {
+    fn apply(self, stack: &mut Vec<V>) -> Result<(), Error> {
         match self {
             Self::Neg => {
                 if let Some(value) = stack.pop() {
                     stack.push(value.neg())
                 } else {
-                    bail!(Error::MissingArguments)
+                    return Err(Error::MissingArguments);
                 }
             }
             Self::Binary(op) => match (stack.pop(), stack.pop()) {
@@ -198,7 +240,7 @@ where
                     };
                     stack.push(value);
                 }
-                _ => bail!(Error::MissingArguments),
+                _ => return Err(Error::MissingArguments),
             },
         }
         Ok(())
@@ -222,13 +264,13 @@ enum Token {
 /// Try to parse an [Operator] from a state represented by a reference to previously parsed [Token]
 /// and current token - potentially the operator.
 impl TryFrom<(Option<&Token>, &str)> for Operator {
-    type Error = anyhow::Error;
+    type Error = Error;
 
-    fn try_from(value: (Option<&Token>, &str)) -> Result<Self> {
+    fn try_from(value: (Option<&Token>, &str)) -> Result<Self, Self::Error> {
         let (last, token) = value;
 
         let op = match (last, token.parse()?) {
-            // Check for preceeding operator and parenthesis to determine the unary negation
+            // Check for preceding operator and parenthesis to determine the unary negation
             (
                 None | Some(Token::Operator(_)) | Some(Token::Parenthesis(ParenKind::Left)),
                 Op::Sub,
@@ -243,15 +285,15 @@ impl TryFrom<(Option<&Token>, &str)> for Operator {
 /// Try to parse a [Token] from a state represented by a reference to previously parsed [Token]
 /// and current token.
 impl TryFrom<(Option<&Self>, &str)> for Token {
-    type Error = anyhow::Error;
+    type Error = Error;
 
-    fn try_from(value: (Option<&Token>, &str)) -> Result<Self> {
+    fn try_from(value: (Option<&Token>, &str)) -> Result<Self, Self::Error> {
         let (last, token) = value;
 
         // Try to parse the token as a number
         if let Ok(num) = token.parse() {
             if let Some(Self::Num(prev)) = last {
-                bail!(Error::InvalidValueSeparation(*prev, num))
+                return Err(Error::InvalidValueSeparation(*prev, num));
             } else {
                 return Ok(Self::Num(num));
             }
@@ -267,20 +309,19 @@ impl TryFrom<(Option<&Self>, &str)> for Token {
             return Ok(Self::Operator(op));
         }
 
-        bail!(Error::ParseFailure(token.to_string()))
+        Err(Error::ParseFailure(token.to_string()))
     }
 }
 
 struct Tokens(Vec<Token>);
 
 impl FromStr for Tokens {
-    type Err = anyhow::Error;
+    type Err = Error;
 
-    fn from_str(s: &str) -> Result<Self> {
-        lazy_static! {
-            static ref TOKENS_RE: Regex =
-                Regex::new(r"[+\-*/()]|\d+\.\d+|\d+").expect("TOKENS_RE failed to compile");
-        }
+    fn from_str(s: &str) -> Result<Self, Error> {
+        static TOKENS_RE: Lazy<Regex> = Lazy::new(|| {
+            Regex::new(r"[+\-*/()]|\d+\.\d+|\d+").expect("TOKENS_RE failed to compile")
+        });
 
         let mut tokens = Vec::new();
 
@@ -307,7 +348,7 @@ mod tests {
     use super::*;
     use rstest::*;
 
-    // Wrap custom message to reduce repitition
+    // Wrap custom message to reduce repetition
     macro_rules! assert_expr_eq {
         ($expr: expr, $expect: expr) => {
             assert_eq!(
@@ -384,12 +425,7 @@ mod tests {
     #[case::missing_neg_arg("-", Error::MissingArguments)]
     #[case::missing_op_arg("1 +", Error::MissingArguments)]
     fn failures(#[case] expr: &str, #[case] expected: Error) {
-        let error = expr
-            .eval::<f64>()
-            .expect_err("eval should fail")
-            .downcast::<Error>()
-            .expect("custom error");
-
+        let error = expr.eval::<f64>().expect_err("eval should fail");
         assert_eq!(error, expected);
     }
 }

@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate lazy_static;
-
 pub mod algebraic_lists;
 pub mod best_travel;
 pub mod bouncing_balls;
