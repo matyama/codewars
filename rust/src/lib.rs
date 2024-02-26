@@ -24,6 +24,7 @@ pub mod screen_patterns;
 pub mod simple_graph;
 pub mod snail;
 pub mod spiralize;
+pub mod string_incrementer;
 pub mod sum_intervals;
 pub mod sum_pairs;
 pub mod tree_levels;

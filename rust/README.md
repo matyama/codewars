@@ -88,6 +88,10 @@
   * Producing consecutive Fibonacci numbers until a condition on their
 		product
   * Implemented in module [`product_fib`](src/product_fib.rs)
+* [String incrementer](https://www.codewars.com/kata/54a91a4883a7de5d7800009c)
+  * Write a function which parses and increments a trailing counter from
+    a string input
+  * Implemented in module [`string_incrementer`](src/string_incrementer.rs)
 * [Sum of Pairs](https://www.codewars.com/kata/54d81488b981293527000c8f)
   * Find pair of integers which sums up to given value in sub-quadratic
     time
