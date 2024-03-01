@@ -23,6 +23,7 @@ pub mod recover_secret;
 pub mod screen_patterns;
 pub mod simple_graph;
 pub mod snail;
+pub mod social_golfer;
 pub mod spiralize;
 pub mod string_incrementer;
 pub mod sum_intervals;

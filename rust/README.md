@@ -47,6 +47,10 @@
 * [Snail](https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1)
   * Produces spiral trail visiting all elements of given matrix
   * Implemented in module [`snail`](src/snail.rs)
+* [Social Golfer Problem Validator](https://www.codewars.com/kata/556c04c72ee1147ff20000c9)
+  * Write a function that validates a proposed solution for a match
+    schedule
+  * Implemented in module [`social_golfer`](src/social_golfer.rs)
 * [Sort binary tree by levels](https://www.codewars.com/kata/52bef5e3588c56132c0003bc)
   * Traverses given tree in BFS order yielding its values
   * Implements [*Breadth-first search*](https://en.wikipedia.org/wiki/Breadth-first_search)
