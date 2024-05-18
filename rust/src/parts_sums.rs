@@ -29,6 +29,6 @@ mod tests {
         ],
     )]
     fn it_works(#[case] ls: &[u64], #[case] expected: &[u64]) {
-        assert_eq!(parts_sums(&ls), expected);
+        assert_eq!(parts_sums(ls), expected);
     }
 }

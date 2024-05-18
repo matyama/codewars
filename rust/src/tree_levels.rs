@@ -56,7 +56,7 @@ mod sample_tests {
 
     fn test_tree(root: &Node, expected: &[u32]) {
         assert_eq!(
-            tree_by_levels(&root),
+            tree_by_levels(root),
             expected,
             "\nYour result (left) didn't match the expected output (right)."
         );

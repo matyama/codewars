@@ -215,7 +215,7 @@ mod tests {
     #[allow(non_fmt_panics)]
     fn assert_parse(formula: &str, expected: &[(&str, usize)], _mst: &str) {
         let mut expected = expected
-            .into_iter()
+            .iter()
             .map(|&(name, usize)| (name.to_owned(), usize))
             .collect::<Molecule>();
         let result = parse_molecule(formula);
