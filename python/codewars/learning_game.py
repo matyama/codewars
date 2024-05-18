@@ -80,16 +80,13 @@ class Experience(NamedTuple):
 class Actor(Protocol):
     @classmethod
     @abstractmethod
-    def new(cls, k: int) -> "Actor":
-        ...
+    def new(cls, k: int) -> "Actor": ...
 
     @abstractmethod
-    def __call__(self) -> int:
-        ...
+    def __call__(self) -> int: ...
 
     @abstractmethod
-    def __iadd__(self, exp: Experience) -> "Actor":
-        ...
+    def __iadd__(self, exp: Experience) -> "Actor": ...
 
 
 @dataclass
