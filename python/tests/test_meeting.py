@@ -1,8 +1,6 @@
-# flake8: noqa
 from codewars.meeting import meeting
 
 
-# pylint: disable=line-too-long
 def test_meeting() -> None:
     cases = [
         (

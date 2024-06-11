@@ -7,7 +7,6 @@ Domain = Set[int]
 Constraint = Tuple[Variable]
 
 
-# pylint: disable=too-many-locals
 def sudoku(puzzle: List[List[int]]) -> List[List[int]]:
     N = 9
 
@@ -118,7 +117,7 @@ def sudoku(puzzle: List[List[int]]) -> List[List[int]]:
         remaining=domains.keys() - assignment.keys(),
         domains=domains,
     )
-    assert solution is not None, 'failed'
+    assert solution is not None, "failed"
 
     # Fill the board from the final solution
     for (row, col), val in solution.items():

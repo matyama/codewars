@@ -2,7 +2,7 @@ import math
 from itertools import combinations
 from typing import Iterable, List, Sequence, Tuple
 
-NAN_POINT = (float('nan'), float('nan'))
+NAN_POINT = (float("nan"), float("nan"))
 
 
 Point = Tuple[float, float]
@@ -18,11 +18,10 @@ def find_min(pairs: Iterable[Tuple[Pair, float]]) -> Tuple[Pair, float]:
     return min(
         pairs,
         key=lambda pd: pd[1],
-        default=((NAN_POINT, NAN_POINT), float('inf')),
+        default=((NAN_POINT, NAN_POINT), float("inf")),
     )
 
 
-# pylint: disable=too-many-locals
 def closest_pair(points: Sequence[Point]) -> Sequence[Point]:
     def find_closest(xs: List[Point], ys: List[Point]) -> Tuple[Pair, float]:
         # Brute-force search for closest pair if current set of points is small

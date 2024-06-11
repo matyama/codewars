@@ -4,7 +4,6 @@ from heapq import heappop, heappush
 from typing import Deque, Iterable, List, Optional
 
 
-# pylint: disable=too-few-public-methods
 class Position:
     """Data structure specified by the Kata"""
 
@@ -16,7 +15,6 @@ class Position:
         return f"({self.x},{self.y})"
 
 
-# pylint: disable=too-few-public-methods
 class Node:
     """Data structure specified by the Kata"""
 
@@ -56,7 +54,7 @@ def find_shortest_path(
             compare=False, default=None
         )
 
-        def transition(self, state: Node) -> 'SearchNode':
+        def transition(self, state: Node) -> "SearchNode":
             dist = self.dist + 1
             return SearchNode(
                 priority=dist + heuristic(state),
@@ -90,11 +88,7 @@ def find_shortest_path(
             return list(path)
 
     # Initial search node
-    node = SearchNode(
-        priority=heuristic(start_node),
-        dist=0,
-        state=start_node,
-    )
+    node = SearchNode(priority=heuristic(start_node), dist=0, state=start_node)
 
     closed = set()
     pq: List[SearchNode] = []

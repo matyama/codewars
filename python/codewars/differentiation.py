@@ -11,7 +11,6 @@ class Expr(ABC):
     def diff(self) -> "Expr":
         raise NotImplementedError
 
-    # pylint: disable=unused-argument
     def chain(self, inner: "Expr") -> "Expr":
         return self
 
@@ -48,7 +47,6 @@ class Fn(Expr, ABC):
         )
 
 
-# pylint: disable=too-few-public-methods
 class UnaryMeta:
     _funcs: Dict[str, Type["Unary"]] = {}
 
@@ -100,10 +98,7 @@ class Cos(Unary):
 @dataclass(frozen=True)
 class Tan(Unary):
     def _diff(self) -> Expr:
-        return Div(
-            arg1=Const(1),
-            arg2=Pow(arg1=Cos(self.arg), arg2=Const(2)),
-        )
+        return Div(arg1=Const(1), arg2=Pow(arg1=Cos(self.arg), arg2=Const(2)))
 
 
 @dataclass(frozen=True)
@@ -118,7 +113,6 @@ class Ln(Unary):
         return Div.apply(arg1=Const(1), arg2=self.arg)
 
 
-# pylint: disable=too-few-public-methods
 class BinaryMeta:
     _ops: Dict[str, Type["Binary"]] = {}
     _op: str
@@ -215,7 +209,6 @@ class Mul(Binary, op="*"):
     def _eval(cls, x: Const, y: Const) -> Const:
         return Const(x.value * y.value)
 
-    # pylint: disable=too-many-return-statements
     @classmethod
     def _apply(cls, arg1: Expr, arg2: Expr) -> Expr:
         if isinstance(arg1, Const):
@@ -225,8 +218,7 @@ class Mul(Binary, op="*"):
                 return Const(0)
             if isinstance(arg2, Div) and isinstance(arg2.arg1, Const):
                 return Div(
-                    arg1=Const(arg1.value * arg2.arg1.value),
-                    arg2=arg2.arg2,
+                    arg1=Const(arg1.value * arg2.arg1.value), arg2=arg2.arg2
                 )
 
         if isinstance(arg2, Const):
@@ -236,8 +228,7 @@ class Mul(Binary, op="*"):
                 return Const(0)
             if isinstance(arg1, Div) and isinstance(arg1.arg1, Const):
                 return Div(
-                    arg1=Const(arg1.arg1.value * arg2.value),
-                    arg2=arg1.arg2,
+                    arg1=Const(arg1.arg1.value * arg2.value), arg2=arg1.arg2
                 )
 
         return cls(arg1, arg2)
@@ -291,10 +282,7 @@ class Pow(Binary, op="^"):
     def _diff(self) -> Expr:
         # Case (exponential): a^f(x)
         if isinstance(self.arg1, Const):
-            df = Mul.apply(
-                arg1=self,
-                arg2=Ln(self.arg1),
-            )
+            df = Mul.apply(arg1=self, arg2=Ln(self.arg1))
             return df.chain(inner=self.arg2)
 
         # Case (power): f(x)^a

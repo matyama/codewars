@@ -62,9 +62,6 @@ def train_machine(actions: list[Action]) -> Machine:
     ],
 )
 def test_multi_cmds(
-    test_cmd: int,
-    test_num: int,
-    expected: int,
-    trained_machine: Machine,
+    test_cmd: int, test_num: int, expected: int, trained_machine: Machine
 ) -> None:
     assert trained_machine.command(test_cmd, test_num) == expected

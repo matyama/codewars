@@ -11,20 +11,17 @@ def make_grid(
     Note: This function is specified in the Kata.
     """
 
-    grid_blueprint = grid_blueprint.strip().replace('\n', '')
+    grid_blueprint = grid_blueprint.strip().replace("\n", "")
     grid: Grid = []
     start_node, end_node = None, None
     for x in range(0, width):
         grid.append([])
         for y in range(0, height):
             char = grid_blueprint[y * width + x]
-            node = Node(
-                position=Position(x, y),
-                passable=char != '1',
-            )
-            if char == 'S':
+            node = Node(position=Position(x, y), passable=char != "1")
+            if char == "S":
                 start_node = node
-            elif char == 'E':
+            elif char == "E":
                 end_node = node
             grid[x].append(node)
 

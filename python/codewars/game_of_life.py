@@ -12,7 +12,7 @@ class LiveZone:
     max_j: int
 
     @classmethod
-    def new(cls, height: int, width: int) -> 'LiveZone':
+    def new(cls, height: int, width: int) -> "LiveZone":
         return cls(height - 1, width - 1, 0, 0)
 
     def update(self, i: int, j: int) -> None:

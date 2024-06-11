@@ -13,11 +13,7 @@ from codewars.strip_comments import strip_comments
             ["#", "!"],
             "apples, pears\ngrapes\nbananas",
         ),
-        (
-            "a #b\nc\nd $e f g",
-            ["#", "$"],
-            "a\nc\nd",
-        ),
+        ("a #b\nc\nd $e f g", ["#", "$"], "a\nc\nd"),
         (" a #b\nc\nd $e f g", ["#", "$"], " a\nc\nd"),
     ],
 )

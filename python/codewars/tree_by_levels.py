@@ -4,7 +4,7 @@ from typing import Optional, TypeAlias
 Tree: TypeAlias = Optional["Node"]
 
 
-class Node:  # pylint: disable=too-few-public-methods,invalid-name
+class Node:
     def __init__(self, L: Tree, R: Tree, n: int) -> None:
         self.left = L
         self.right = R

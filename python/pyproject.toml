@@ -21,28 +21,18 @@ classifiers = [
 python = "^3.10"
 
 [tool.poetry.dev-dependencies]
-black = "*"
-flake8 = "*"
-flake8-black = "*"
-flake8-comprehensions = "*"
-flake8-isort = "*"
-flake8-mutable = "*"
-flake8-pytest = "*"
 hypothesis = "*"
 mypy = "*"
-pylint = "*"
+ruff = "*"
 pytest = "*"
 pytest-timeouts = "*"
 
-[tool.black]
+[tool.ruff]
 line-length = 79
-target-version = ['py310']
-skip-string-normalization = true
+target-version = "py310"
 
-[tool.isort]
-multi_line_output = 3
-line_length = 79
-include_trailing_comma = true
+[tool.ruff.format]
+skip-magic-trailing-comma = true
 
 [tool.mypy]
 cache_dir = "/dev/null"
@@ -66,20 +56,6 @@ module = [
     "_pytest",
 ]
 ignore_missing_imports = true
-
-[tool.pylint.basic]
-good-names="""
-    a,b,c,d,e,f,g,h,i,j,k,m,n,p,q,r,s,t,v,w,x,y,z,N,
-    at,df,ex,fn,fs,ls,lq,mu,nq,of,op,pk,pq,q1,q3,ts,xs,x1,x2,ys,y1,y2,
-    Run,_
-"""
-
-[tool.pylint.messages_control]
-disable = [
-    "missing-module-docstring",
-    "missing-class-docstring",
-    "missing-function-docstring",
-]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

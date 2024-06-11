@@ -10,15 +10,9 @@ class Direction(IntEnum):
     WEST = 3
 
 
-OPPOSITE = (
-    Direction.SOUTH,
-    Direction.NORTH,
-    Direction.WEST,
-    Direction.EAST,
-)
+OPPOSITE = (Direction.SOUTH, Direction.NORTH, Direction.WEST, Direction.EAST)
 
 
-# pylint: disable=invalid-name
 def dirReduc(arr: Sequence[str]) -> List[str]:
     path: Deque[Direction] = deque(maxlen=len(arr))
 

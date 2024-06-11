@@ -6,7 +6,7 @@ def solution(args: Sequence[int]) -> str:
         if len(buffer) < 3:
             yield from map(str, buffer)
         else:
-            yield f'{buffer[0]}-{buffer[-1]}'
+            yield f"{buffer[0]}-{buffer[-1]}"
 
     def ranges(xs: Sequence[int]) -> Iterable[str]:
         buffer: List[int] = []
@@ -18,4 +18,4 @@ def solution(args: Sequence[int]) -> str:
                 buffer.append(x)
         yield from output(buffer)
 
-    return ','.join(ranges(args))
+    return ",".join(ranges(args))

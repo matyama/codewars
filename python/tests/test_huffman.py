@@ -38,11 +38,11 @@ def test_example_encode_len(freqs: Freqs, text: str) -> None:
 @pytest.mark.parametrize(
     "fs,s,expected",
     [
-        ([('a', 1), ('b', 1)], "a", 1),
-        ([('a', 1), ('b', 1)], "b", 1),
-        ([('a', 1), ('b', 1), ('c', 2)], "a", 2),
-        ([('a', 1), ('b', 1), ('c', 2)], "b", 2),
-        ([('a', 1), ('b', 1), ('c', 2)], "c", 1),
+        ([("a", 1), ("b", 1)], "a", 1),
+        ([("a", 1), ("b", 1)], "b", 1),
+        ([("a", 1), ("b", 1), ("c", 2)], "a", 2),
+        ([("a", 1), ("b", 1), ("c", 2)], "b", 2),
+        ([("a", 1), ("b", 1), ("c", 2)], "c", 1),
     ],
 )
 def test_encode_len(fs: Freqs, s: str, expected: int) -> None:

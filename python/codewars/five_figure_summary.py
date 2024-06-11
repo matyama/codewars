@@ -11,7 +11,7 @@ from typing import Any, TypeAlias, cast
 Summary: TypeAlias = tuple[int, float, float, float, float, float]
 
 
-class StatisticalSummary:  # pylint: disable=too-few-public-methods
+class StatisticalSummary:
     def __init__(self, seq: Sequence[Any]) -> None:
         assert seq, "empty data sequence"
         xs = sorted(num for x in seq if (num := parse_num(x)) is not None)

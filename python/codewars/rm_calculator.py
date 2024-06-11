@@ -10,7 +10,7 @@ def lombardi(w: float, r: int) -> float:
     return w * float(r**0.10)
 
 
-def calculate_1RM(w: float, r: int) -> int:  # pylint: disable=invalid-name
+def calculate_1RM(w: float, r: int) -> int:
     match r:
         case 0:
             return 0

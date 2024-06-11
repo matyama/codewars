@@ -33,13 +33,7 @@ NUMS = {
     "nine": 9,
 }
 
-KEYWORDS = {
-    0: "#",
-    1: "ten",
-    2: "hundred",
-    3: "thousand",
-    6: "million",
-}
+KEYWORDS = {0: "#", 1: "ten", 2: "hundred", 3: "thousand", 6: "million"}
 
 
 def parse(ts: list[str], order: int) -> int:
@@ -99,7 +93,7 @@ def normalize(token: str) -> Iterable[str]:
             yield from ("one", "ten", token.removesuffix("teen"))
         case token if "-" in token:
             a, b = token.split("-")
-            yield from normalize(a)  # pylint: disable=not-an-iterable
-            yield from normalize(b)  # pylint: disable=not-an-iterable
+            yield from normalize(a)
+            yield from normalize(b)
         case token:
             yield from token.split()

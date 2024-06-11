@@ -3,7 +3,7 @@ import sys
 from heapq import heappop, heappush
 from typing import Dict, Iterable, List, NamedTuple, Tuple, cast
 
-COL_IX = {col: i for i, col in enumerate('abcdefgh')}
+COL_IX = {col: i for i, col in enumerate("abcdefgh")}
 
 # Row and column offsets for knight moves
 MOVES = (
@@ -23,12 +23,11 @@ class Position(NamedTuple):
     col: int
 
     @classmethod
-    def at(cls, pos: str) -> 'Position':
+    def at(cls, pos: str) -> "Position":
         col, row = pos[0], pos[1]
         return cls(8 - int(row), COL_IX[col])
 
-    def offset(self, move: Tuple[int, int]) -> 'Position':
-        # pylint: disable=invalid-name
+    def offset(self, move: Tuple[int, int]) -> "Position":
         ro, co = move
         return Position(self.row + ro, self.col + co)
 
@@ -72,7 +71,7 @@ def knight(src: str, dst: str) -> int:
                 # Pop first non-deprecated item
                 del pq_entries[pos]
                 return cast(Position, pos)
-        raise KeyError('Priority queue is empty')
+        raise KeyError("Priority queue is empty")
 
     # Dijkstra's SP / Uniform-Cost Search
 

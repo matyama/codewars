@@ -6,12 +6,11 @@ install:
 	poetry install
 
 fmt:
-	isort .
-	black .
+	ruff format
 
 lint:
-	flake8 .
-	pylint codewars tests
+	ruff format --check
+	ruff check
 	mypy .
 
 tests:
