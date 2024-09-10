@@ -9,12 +9,13 @@ SELECT
 FROM users,
     XMLTABLE(
         '//data/user'
-        passing data
-        columns
-        first_name text PATH 'first_name',
-        last_name text PATH 'last_name',
-        date_of_birth date PATH 'date_of_birth',
-        email_address text PATH 'email_addresses/address[1]' DEFAULT 'None',
-        private bool PATH 'private'
+        passing data --noqa: RF02
+        columns --noqa: RF02
+        first_name text PATH 'first_name', --noqa: RF02
+        last_name text PATH 'last_name', --noqa: RF02
+        date_of_birth date PATH 'date_of_birth', --noqa: RF02 
+        email_address text --noqa: RF02
+        PATH 'email_addresses/address[1]' DEFAULT 'None',
+        private bool PATH 'private' --noqa: RF02
     ) AS u
 ORDER BY u.first_name, u.last_name

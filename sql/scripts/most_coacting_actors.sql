@@ -1,7 +1,7 @@
 WITH actor_film AS (
     SELECT
-        a.actor_id AS actor_id,
-        fa.film_id AS film_id,
+        a.actor_id,
+        fa.film_id,
         CONCAT(a.first_name, ' ', a.last_name) AS actor_name
     FROM actor AS a
     INNER JOIN film_actor AS fa ON a.actor_id = fa.actor_id
@@ -24,7 +24,7 @@ top_pair AS (
 SELECT
     a1.actor_name AS first_actor,
     a2.actor_name AS second_actor,
-    f.title AS title
+    f.title
 FROM top_pair AS p
 INNER JOIN actor_film AS a1 ON p.fst_actor = a1.actor_id
 INNER JOIN
