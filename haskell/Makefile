@@ -8,11 +8,13 @@ build:
 clean:
 	stack clean
 
+fmt: FILES := $(shell git ls-files '*.hs')
 fmt:
-	stack exec -- brittany --write-mode=inplace *.hs
+	stack exec -- fourmolu --mode inplace $(FILES)
 
+lint: FILES := $(shell git ls-files '*.hs')
 lint:
-	stack exec -- brittany -c *.hs
+	stack exec -- fourmolu --mode check $(FILES)
 	stack exec -- hlint .
 
 setup:

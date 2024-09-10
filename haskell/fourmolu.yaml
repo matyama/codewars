@@ -1,0 +1,5 @@
+# https://fourmolu.github.io/config
+column-limit: 80
+record-brace-space: true
+haddock-style: single-line
+let-style: inline

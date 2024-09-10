@@ -1,11 +1,12 @@
 {-# LANGUAGE LambdaCase #-}
+
 module AlgebraicISO where
 
-import           Data.Maybe                     ( isJust )
-import           Data.Tuple                     ( swap )
-import           Data.Void
+import Data.Maybe (isJust)
+import Data.Tuple (swap)
+import Data.Void
 
-import           ISO
+import ISO
 
 {-
    [Algebraic data type](https://en.wikipedia.org/wiki/Algebraic_data_type) got
@@ -21,7 +22,7 @@ import           ISO
     - 'Either a b' combines the information of either 'a' or 'b' which can be
       expressed as `a + b` (note: `Either a () ~= Maybe a`)
     - '(a, b)' combines the information of both 'a' and 'b' which corresponds
-      to the (cartesian) product `a * b` 
+      to the (cartesian) product `a * b`
     - The information expressed by 'a -> b' is best viewed when reading this
       pure function as a table - in order to build it one has to enumerate all
       the `b ^ a` values
@@ -49,26 +50,26 @@ isoPow = isoFunc
 -- | Commutativity of addition: `a + b ~= b + a`
 plusComm :: ISO (Either a b) (Either b a)
 plusComm =
-  ( \case
-    Left  a -> Right a
-    Right b -> Left b
-  , \case
-    Left  b -> Right b
-    Right a -> Left a
-  )
+    ( \case
+        Left a -> Right a
+        Right b -> Left b
+    , \case
+        Left b -> Right b
+        Right a -> Left a
+    )
 
 -- | Associativity of addition: `a + b + c ~= a + (b + c)`
 plusAssoc :: ISO (Either (Either a b) c) (Either a (Either b c))
 plusAssoc =
-  ( \case
-    Left  (Left  a) -> Left a
-    Left  (Right b) -> Right (Left b)
-    Right c         -> Right (Right c)
-  , \case
-    Left  a         -> Left (Left a)
-    Right (Left  b) -> Left (Right b)
-    Right (Right c) -> Right c
-  )
+    ( \case
+        Left (Left a) -> Left a
+        Left (Right b) -> Right (Left b)
+        Right c -> Right (Right c)
+    , \case
+        Left a -> Left (Left a)
+        Right (Left b) -> Left (Right b)
+        Right (Right c) -> Right c
+    )
 
 -- | Commutativity of multiplication: `a * b ~= b * a`
 multComm :: ISO (a, b) (b, a)
@@ -82,13 +83,13 @@ multAssoc = (\((a, b), c) -> (a, (b, c)), \(a, (b, c)) -> ((a, b), c))
 --   `a * (b + c) ~= a * b + a * c`
 dist :: ISO (a, Either b c) (Either (a, b) (a, c))
 dist =
-  ( \case
-    (a, Left b ) -> Left (a, b)
-    (a, Right c) -> Right (a, c)
-  , \case
-    Left  (a, b) -> (a, Left b)
-    Right (a, c) -> (a, Right c)
-  )
+    ( \case
+        (a, Left b) -> Left (a, b)
+        (a, Right c) -> Right (a, c)
+    , \case
+        Left (a, b) -> (a, Left b)
+        Right (a, c) -> (a, Right c)
+    )
 
 -- | Exponentiation idientity that defines currying:
 --   `(c ^ b) ^ a ~= c ^ (a * b)`
@@ -104,34 +105,34 @@ one = (const Nothing, const ())
 -- | Successor of one: `2 ~= S (S O)`
 two :: ISO Bool (Maybe (Maybe Void))
 two =
-  ( \b -> if b then Just Nothing else Nothing
-  , \case
-    Just (Just z) -> absurd z
-    mmv           -> isJust mmv
-  )
+    ( \b -> if b then Just Nothing else Nothing
+    , \case
+        Just (Just z) -> absurd z
+        mmv -> isJust mmv
+    )
 
 -- | Zero is the additive identity: `O + b ~= b`
 plusO :: ISO (Either Void b) b
 plusO =
-  ( \case
-    Left  z -> absurd z
-    Right b -> b
-  , Right
-  )
+    ( \case
+        Left z -> absurd z
+        Right b -> b
+    , Right
+    )
 
 -- | Propagation of addition into the successor relation:
 --   `S a + b ~= S (a + b)` i.e. `(1 + a) + b = 1 + (a + b)`
 plusS :: ISO (Either (Maybe a) b) (Maybe (Either a b))
 plusS =
-  ( \case
-    Left  Nothing  -> Nothing
-    Left  (Just a) -> Just $ Left a
-    Right b        -> Just $ Right b
-  , \case
-    Nothing        -> Left Nothing
-    Just (Left  a) -> Left $ Just a
-    Just (Right b) -> Right b
-  )
+    ( \case
+        Left Nothing -> Nothing
+        Left (Just a) -> Just $ Left a
+        Right b -> Just $ Right b
+    , \case
+        Nothing -> Left Nothing
+        Just (Left a) -> Left $ Just a
+        Just (Right b) -> Right b
+    )
 
 -- | Introduction of successor relation from addition: `1 + b ~= S b`
 plusSO :: ISO (Either () b) (Maybe b)
@@ -145,22 +146,22 @@ multO = (fst, absurd)
 --   `S a * b ~= b + a * b` i.e. `(1 + a) * b = b + a * b`
 multS :: ISO (Maybe a, b) (Either b (a, b))
 multS =
-  ( \case
-    (Just a , b) -> Right (a, b)
-    (Nothing, b) -> Left b
-  , \case
-    Left  b      -> (Nothing, b)
-    Right (a, b) -> (Just a, b)
-  )
+    ( \case
+        (Just a, b) -> Right (a, b)
+        (Nothing, b) -> Left b
+    , \case
+        Left b -> (Nothing, b)
+        Right (a, b) -> (Just a, b)
+    )
 
 -- | One is the multiplicative identity: `1 * b ~= b`
 multSO :: ISO ((), b) b
 multSO =
-  isoProd one refl
-    `trans` multS
-    `trans` isoPlus refl multO
-    `trans` plusComm
-    `trans` plusO
+    isoProd one refl
+        `trans` multS
+        `trans` isoPlus refl multO
+        `trans` plusComm
+        `trans` plusO
 
 -- | Exponentiation to the zero-th power: `a ^ O ~= 1`
 powO :: ISO (Void -> a) ()
@@ -184,8 +185,8 @@ powS = (\mba -> (mba Nothing, mba . Just), uncurry maybe)
 -- | One is the right identity of exponentiation: `a ^ 1 = a`
 powSO :: ISO (() -> a) a
 powSO =
-  isoPow one refl
-    `trans` powS
-    `trans` multComm
-    `trans` isoProd powO refl
-    `trans` multSO
+    isoPow one refl
+        `trans` powS
+        `trans` multComm
+        `trans` isoProd powO refl
+        `trans` multSO

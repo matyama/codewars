@@ -1,17 +1,21 @@
 {-# LANGUAGE LambdaCase #-}
+
 module ISO where
 
-import           Data.Maybe                     ( fromJust
-                                                , fromMaybe
-                                                )
-import           Data.Bifunctor                 ( bimap
-                                                , Bifunctor
-                                                )
-import           Data.Profunctor                ( dimap
-                                                , Profunctor
-                                                )
-import           Data.Tuple                     ( swap )
-import           Data.Void
+import Data.Bifunctor (
+    Bifunctor,
+    bimap,
+ )
+import Data.Maybe (
+    fromJust,
+    fromMaybe,
+ )
+import Data.Profunctor (
+    Profunctor,
+    dimap,
+ )
+import Data.Tuple (swap)
+import Data.Void
 
 -- | Definition of an isomorphism as a pair of `(f, f')` where
 --   `f . f' = id = f' . f`
@@ -30,7 +34,7 @@ isoBool :: ISO Bool Bool
 isoBool = (id, id)
 
 -- | Evidence that there can be more than one isomorphism.
---   
+--
 --   Here shown on two isomorphisms for functions `Bool -> Bool`:
 --    1. defined by 'isoBool'
 --    2. defined here by 'isoBoolNot'
@@ -42,13 +46,13 @@ refl :: ISO a a
 refl = (id, id)
 
 -- | Isomorphism is symmetric: `symm . symm = id`
---  
+--
 --   Note: `symm :: (a -> b, b -> a) -> (b -> a, a -> b)`
 symm :: ISO a b -> ISO b a
 symm = swap
 
 -- | Isomorphism is transitive
---  
+--
 --   ```haskell
 --   trans :: (a -> b, b -> a) -> (b -> c, c -> b) -> (a -> c, c -> a)
 --   ```
@@ -137,7 +141,7 @@ isoFunc = isoProfunctor
 --    2. There is just single possible option how to get a 'b' out of 'Nothing'
 --       and that is to use the other 'ISO' projection ('substR') and make a
 --       'b' value 'fromJust'
---   
+--
 --   Because 'substL' and 'substR' are inverses of each other, the 'fromJust'
 --   can be justified as the only implementation option.
 --
@@ -146,9 +150,9 @@ isoFunc = isoProfunctor
 --   ```
 isoUnMaybe :: ISO (Maybe a) (Maybe b) -> ISO a b
 isoUnMaybe (mab, mba) =
-  ( fromMaybe (fromJust $ mab Nothing) . mab . Just
-  , fromMaybe (fromJust $ mba Nothing) . mba . Just
-  )
+    ( fromMaybe (fromJust $ mab Nothing) . mab . Just
+    , fromMaybe (fromJust $ mba Nothing) . mba . Just
+    )
 
 -- | Evidence that there cannot be an isomorphism:
 --   ```haskell
@@ -157,25 +161,25 @@ isoUnMaybe (mab, mba) =
 --   If there was, then one could get 'Void'
 --    - first by getting an `(isoUnEither isoEU) :: ISO () Void`
 --    - and then taking 'substL' to pick the 'Void' from it
---   
+--
 --   This would be 'absurd'!
 --
 --   The trick behid the 'isoEU' is the following encoding:
 --    - 'Right' variant of the first 'Either' is encoded to 'Left []'
 --    - 'Left' on the other hand increments (resp. decrements) its length
---   
+--
 --   I.e. the information about the side is encoded into the length of the
 --   (infinite) list in the 'Left' side of the latter 'Either'.
 isoEU :: ISO (Either [()] ()) (Either [()] Void)
 isoEU =
-  ( \case
-    Left  x -> Left (() : x)
-    Right _ -> Left []
-  , \case
-    Left  []       -> Right ()
-    Left  (_ : xs) -> Left xs
-    Right x        -> absurd x
-  )
+    ( \case
+        Left x -> Left (() : x)
+        Right _ -> Left []
+    , \case
+        Left [] -> Right ()
+        Left (_ : xs) -> Left xs
+        Right x -> absurd x
+    )
 
 -- | Symmetry of two isomorphisms lifted to an 'ISO':
 --   ```haskell

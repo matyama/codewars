@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5be09f1c41e4ed6da170ac37fbc57e9a97d1bf2357a366c3d5e43bdf997f6396
+-- hash: 5230425cec987efb6d90ba3f13673d6fedbdb248c09607e147d6fbf2524b8e1e
 
 name:           haskell
 version:        0.1.0.0
@@ -43,6 +43,8 @@ library
       Narcissistic
       PickPeak
       Square
+      SumOfIntervals
+      TreeByLevels
   other-modules:
       Paths_haskell
   hs-source-dirs:
@@ -72,6 +74,8 @@ test-suite haskell-test
       NarcissisticSpec
       PickPeakSpec
       SquareSpec
+      SumOfIntervalsSpec
+      TreeByLevelsSpec
       Paths_haskell
   hs-source-dirs:
       test

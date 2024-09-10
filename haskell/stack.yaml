@@ -1,6 +1,6 @@
-# Current Codewars environment uses ghc-8.8.4, hence this LTS version
+# Current Codewars environment uses ghc-9.2.5, hence this LTS version
 # See https://www.stackage.org/
-resolver: lts-16.31
+resolver: lts-20.10
 
 ghc-options:
   haskell:
