@@ -11,14 +11,14 @@ keywords = ["codewars", "python", "algorithms"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
-    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Operating System :: Unix",
     "Topic :: Software Development :: Libraries",
     "Typing :: Typed",
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 
 [tool.poetry.dev-dependencies]
 hypothesis = "*"
@@ -29,7 +29,7 @@ pytest-timeouts = "*"
 
 [tool.ruff]
 line-length = 79
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.format]
 skip-magic-trailing-comma = true
@@ -37,7 +37,7 @@ skip-magic-trailing-comma = true
 [tool.mypy]
 cache_dir = "/dev/null"
 ignore_missing_imports = false
-python_version = "3.10"
+python_version = "3.11"
 
 # equivalent to --strict except for the modifications above:
 disallow_untyped_calls = true
@@ -51,10 +51,7 @@ warn_unused_configs = true
 no_implicit_optional = true
 
 [[tool.mypy.overrides]]
-module = [
-    "pytest",
-    "_pytest",
-]
+module = ["pytest", "_pytest"]
 ignore_missing_imports = true
 
 [build-system]
