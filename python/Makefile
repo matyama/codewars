@@ -6,6 +6,7 @@ install:
 	poetry install
 
 fmt:
+	ruff check --select I --fix .
 	ruff format
 
 lint:
