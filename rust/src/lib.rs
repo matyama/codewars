@@ -12,6 +12,7 @@ pub mod in_array;
 pub mod integer_partitions;
 pub mod magnet_particles;
 pub mod molecule;
+pub mod move_zeros;
 pub mod parts_sums;
 pub mod path_finder;
 pub mod perimeter;

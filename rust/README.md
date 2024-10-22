@@ -85,6 +85,10 @@
   * Parsing textual representation of a molecule
   * Counting number of atoms in compound molecules
   * Implemented in module [`molecule`](src/molecule.rs)
+* [Moving Zeros To The End](https://www.codewars.com/kata/52597aa56021e91c93000cb0)
+  * Write an algorithm that takes an array and moves all of the zeros to
+    the end, preserving the order of the other elements
+  * Implemented in module [`move_zeros`](src/move_zeros.rs)
 * [Perimeter of squares in a rectangle](https://www.codewars.com/kata/559a28007caad2ac4e000083)
   * Computing sum of first *n* Fibonacci numbers
   * Implemented in module [`perimeter`](src/perimeter.rs)
