@@ -1,8 +1,7 @@
 pub fn move_zeros(arr: &[u8]) -> Vec<u8> {
     let n = arr.len();
 
-    let mut out = Vec::with_capacity(n);
-    out.resize(n, 0);
+    let mut out = vec![0; n];
 
     let mut pos = 0;
     for &value in arr {

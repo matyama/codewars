@@ -96,6 +96,10 @@
   * Producing consecutive Fibonacci numbers until a condition on their
 		product
   * Implemented in module [`product_fib`](src/product_fib.rs)
+* [Simple assembler interpreter](https://www.codewars.com/kata/58e24788e24ddee28e000053)
+  * A simple interpreter of assembler which supports:
+    `mov x y`, `inc x`, `dec x`, and `jnz x y`
+  * Implemented in module [`simple_assembler`](codewars/simple_assembler.py)
 * [String incrementer](https://www.codewars.com/kata/54a91a4883a7de5d7800009c)
   * Write a function which parses and increments a trailing counter from
     a string input
