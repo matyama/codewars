@@ -154,6 +154,10 @@
 * [Meeting](https://www.codewars.com/kata/59df2f8f08c6cec835000012)
   * Sorting and simple string manipulation
   * Implemented in module [`meeting`](codewars/meeting.py)
+* [Simple Fun #83: MineSweeper](https://www.codewars.com/kata/58952e29f0902eae8b0000cb)
+  * Given a flagged *MineSweeper* board, count the number of neighboring
+    mines for each board position
+  * Implemented in module [`minesweeper`](codewars/minesweeper.py)
 * [Sums of Parts](https://www.codewars.com/kata/5ce399e0047a45001c853c2b)
   * Computes all cumulative sums of given list of numbers
   * Simple enumeration and aggregation
