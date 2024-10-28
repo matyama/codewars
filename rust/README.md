@@ -1,6 +1,13 @@
 # Rust Kata
 
 ## 2 kyu
+* [Assembler interpreter (Part II)](https://www.codewars.com/kata/58e61f3d8ff24f774400002c)
+  * An interpreter of assembler which will support the following
+    instructions: `mov x, y`, `inc x`, `dec x`, `add x, y`, `sub x, y`,
+    `sub x, y`, `mul x, y`, `div x, y`, `label:`, `jmp lbl`, `jne lbl`,
+    `je lbl`, `jge lbl`, `jg lbl`, `jle lbl`, `jl lbl`, `call lbl`,
+    `ret`, `msg 'Register: ', x`, `end`, `; comment`
+  * Implemented in module [`assembler_interpreter`](src/assembler_interpreter.rs)
 * [Evaluate mathematical expression](https://www.codewars.com/kata/52a78825cdfc2cfc87000005)
   * Parses and evaluates algebraic expressions in infix form containing
 		binary operators and unary negation
