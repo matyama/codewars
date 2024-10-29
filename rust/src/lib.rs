@@ -29,6 +29,7 @@ pub mod snail;
 pub mod social_golfer;
 pub mod spiralize;
 pub mod string_incrementer;
+pub mod sudoku_solver;
 pub mod sum_intervals;
 pub mod sum_pairs;
 pub mod tree_levels;

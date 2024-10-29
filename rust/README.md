@@ -27,7 +27,12 @@
   * Counts the number of possible patterns on an Android lock screen
 		starting from given position
   * Implemented as an exhaustive backtracking search
-  * Implemented in module [`screen_patterns`](src/screen-patterns.rs)
+  * Implemented in module [`screen_patterns`](src/screen_patterns.rs)
+* [Sudoku Solver](https://www.codewars.com/kata/5296bc77afba8baa690002d7)
+  * Implements a [*CSP-based Sudoku solver*](https://en.wikipedia.org/wiki/Constraint_satisfaction_problem)
+    with [AC3](https://en.wikipedia.org/wiki/AC-3_algorithm) checking
+    and *MRV* heuristic
+  * Implemented in module [`sudoku_solver`](src/sudoku_solver.rs)
 
 ## 4 kyu
 * [Algebraic Lists](https://www.codewars.com/kata/529a92d9aba78c356b000353)
