@@ -2,7 +2,7 @@ use std::cmp::max;
 
 /// Solves the Graph Realization Problem:
 ///  - Implements the Erdős-Gallai approach in `O(n*log(n))` time:
-///  http://compalg.inf.elte.hu/~tony/Kutatas/EGHH/Comb-IvanyiLucz-23Nov.pdf
+///  <http://compalg.inf.elte.hu/~tony/Kutatas/EGHH/Comb-IvanyiLucz-23Nov.pdf>
 ///  - Note that with better sorting procedure (e.g. *Radix Sort*) the time
 ///  complexity can be reduced to linear
 pub fn solution(degrees: Vec<usize>) -> bool {

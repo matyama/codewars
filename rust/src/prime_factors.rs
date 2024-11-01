@@ -3,7 +3,7 @@ use std::collections::HashMap;
 /// From given list `l` collects a vector of pairs `(p, s)` where
 ///  1. `p` is a prime factor of at least one number `x` in `l`
 ///  2. `s` is the sum of all such `x` in `l` for which `p` is a prime factor
-/// Implementation is based on https://bit.ly/3flId4d
+/// Implementation is based on <https://bit.ly/3flId4d>
 pub fn sum_of_divided(l: Vec<i64>) -> Vec<(i64, i64)> {
     let mut sums: Vec<(i64, i64)> = l
         .into_iter()

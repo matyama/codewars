@@ -31,4 +31,4 @@ thiserror = "1.0"
 
 [dev-dependencies]
 float_eq = "1.0"
-rstest = "0.18" # Extra dependency to reduce code bloat in tests
+rstest = "0.18"  # Extra dependency to reduce code bloat in tests
