@@ -11,6 +11,7 @@ pub mod dubstep;
 pub mod eval_expression;
 pub mod in_array;
 pub mod integer_partitions;
+pub mod isomorphism;
 pub mod magnet_particles;
 pub mod molecule;
 pub mod move_zeros;

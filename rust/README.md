@@ -20,6 +20,12 @@
   * Implemented in module [`differentiation`](src/differentiation.rs)
 
 ## 3 kyu
+* [Isomorphism](https://www.codewars.com/kata/5922543bf9c15705d0000020)
+  * Definition of an [*isomorphism*](https://en.wikipedia.org/wiki/Isomorphism)
+  * Validation of properties of isomorphisms: equivalence relation,
+    lifting to a `Functor` and `Bifunctor`, lowering isomorphisms over
+    `Maybe` and evidence of the impossibility to lower fromISO an `Either`
+  * Implemented in module [`isomorphism`](src/isomorphism.rs)
 * [Make a spiral](https://www.codewars.com/kata/534e01fbbb17187c7e0000c6)
   * Creates a square matrix of given size with a spiral-like pattern
   * Implemented in module [`spiralize`](src/spiralize.rs)
