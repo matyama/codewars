@@ -45,6 +45,11 @@
 * [Magnet particles in boxes](https://www.codewars.com/kata/56c04261c3fcf33f2d000534)
   * Simple transformation and aggregation over an `Iterator`
   * Implemented in module [`magnet_particles`](src/magnet_particles.rs)
+* [Organize a Round-robin tournament](https://www.codewars.com/kata/561c20edc71c01139000017c)
+  * Build a matches table for a round-robin tournament given the number
+    of players
+  * Implements the [_Circle method_](https://en.wikipedia.org/wiki/Round-robin_tournament)
+  * Implemented in module [`round_robin_tourney`](src/round_robin_tourney.rs)
 * [Path Finder #1: can you reach the exit?](https://www.codewars.com/kata/5765870e190b1472ec0022a2)
   * Checks if there is a path between two locations in a 2D grid maze
   * Implements simplified version of [(Weighted) A* algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm)

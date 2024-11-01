@@ -22,6 +22,7 @@ pub mod population_growth;
 pub mod prime_factors;
 pub mod product_fib;
 pub mod recover_secret;
+pub mod round_robin_tourney;
 pub mod screen_patterns;
 pub mod simple_assembler;
 pub mod simple_graph;
