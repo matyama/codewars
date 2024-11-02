@@ -1,3 +1,4 @@
+pub mod algebraic_isomorphism;
 pub mod algebraic_lists;
 pub mod assembler_interpreter;
 pub mod best_travel;

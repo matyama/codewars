@@ -1,6 +1,12 @@
 # Rust Kata
 
 ## 2 kyu
+* [Algebraic Isomorphism](https://www.codewars.com/kata/5917f22dd2563a36a200009c)
+  * Implements bunch of algebraic rules which give the name to
+    [*Algebraic Data Types*](https://en.wikipedia.org/wiki/Algebraic_data_type)
+  * Algebraic rules are satisfied by ADTs under *isomorphism*
+  * This is a follow-up to the *Isomorphism* kata and is implemented in
+    module [`algebraic_isomorphism`](src/algebraic_isomorphism.rs)
 * [Assembler interpreter (Part II)](https://www.codewars.com/kata/58e61f3d8ff24f774400002c)
   * An interpreter of assembler which will support the following
     instructions: `mov x, y`, `inc x`, `dec x`, `add x, y`, `sub x, y`,
