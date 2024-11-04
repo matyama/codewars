@@ -26,6 +26,10 @@
   * Implemented in module [`differentiation`](src/differentiation.rs)
 
 ## 3 kyu
+* [Binomial Expansion](https://www.codewars.com/kata/540d0fdd3b6532e5c3000b5b)
+  * Expands an expression of the form `(ax+b)^n` using the
+    [*Binomial formula*](https://en.wikipedia.org/wiki/Binomial_theorem)
+  * Implemented in module [`binomial_expansion`](src/binomial_expansion.rs)
 * [Isomorphism](https://www.codewars.com/kata/5922543bf9c15705d0000020)
   * Definition of an [*isomorphism*](https://en.wikipedia.org/wiki/Isomorphism)
   * Validation of properties of isomorphisms: equivalence relation,
