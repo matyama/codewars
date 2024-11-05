@@ -5,6 +5,7 @@ pub mod best_travel;
 pub mod binomial_expansion;
 pub mod bouncing_balls;
 pub mod caa_stats;
+pub mod closest_points;
 pub mod count_duplicates;
 pub mod delete_nth;
 pub mod differentiation;
