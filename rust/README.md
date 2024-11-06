@@ -44,6 +44,13 @@
 * [Make a spiral](https://www.codewars.com/kata/534e01fbbb17187c7e0000c6)
   * Creates a square matrix of given size with a spiral-like pattern
   * Implemented in module [`spiralize`](src/spiralize.rs)
+* [Prime Streaming (PG-13)](https://www.codewars.com/kata/5519a584a73e70fa570005f5)
+  * An endless iterator that returns prime numbers
+  * The iterator is able to produce 50 million primes in a few seconds
+  * Implements the
+    [_The Genuine Sieve of Eratosthenes_](https://doi.org/10.1017/S0956796808007004)
+    paper
+  * Implemented in module [`primes`](src/primes.rs)
 * [Rail Fence Cipher: Encoding and Decoding](https://www.codewars.com/kata/58c5577d61aefcf3ff000081)
   * Implements an encoder and decoder for the
     [Rail Fence Cipher](https://en.wikipedia.org/wiki/Rail_fence_cipher)

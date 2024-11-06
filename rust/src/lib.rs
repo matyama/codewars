@@ -24,6 +24,7 @@ pub mod perimeter;
 pub mod persistent_bugger;
 pub mod population_growth;
 pub mod prime_factors;
+pub mod primes;
 pub mod product_fib;
 pub mod rail_fence_cipher;
 pub mod recover_secret;
