@@ -44,6 +44,10 @@
 * [Make a spiral](https://www.codewars.com/kata/534e01fbbb17187c7e0000c6)
   * Creates a square matrix of given size with a spiral-like pattern
   * Implemented in module [`spiralize`](src/spiralize.rs)
+* [Rail Fence Cipher: Encoding and Decoding](https://www.codewars.com/kata/58c5577d61aefcf3ff000081)
+  * Implements an encoder and decoder for the
+    [Rail Fence Cipher](https://en.wikipedia.org/wiki/Rail_fence_cipher)
+  * Implemented in module [`rail_fence_cipher`](src/rail_fence_cipher.rs)
 * [Screen Locking Patterns](https://www.codewars.com/kata/585894545a8a07255e0002f1)
   * Counts the number of possible patterns on an Android lock screen
 		starting from given position

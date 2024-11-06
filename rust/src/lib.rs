@@ -25,6 +25,7 @@ pub mod persistent_bugger;
 pub mod population_growth;
 pub mod prime_factors;
 pub mod product_fib;
+pub mod rail_fence_cipher;
 pub mod recover_secret;
 pub mod round_robin_tourney;
 pub mod screen_patterns;
