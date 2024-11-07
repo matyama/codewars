@@ -1,5 +1,5 @@
 use std::cmp::{Ordering, Reverse};
-use std::collections::BinaryHeap;
+use std::collections::binary_heap::{self, BinaryHeap};
 use std::iter::{Copied, Cycle};
 
 /// Returns an infinite stream of prime numbers
@@ -26,7 +26,7 @@ struct Wheel<const N: usize, I: Iterator<Item = u64>> {
     spin: Spin<I>,
 }
 
-type SpinIter<T> = Cycle<Copied<std::slice::Iter<'static, T>>>;
+type SpinIter<T> = Copied<std::slice::Iter<'static, T>>;
 
 impl Default for Wheel<4, SpinIter<u64>> {
     fn default() -> Self {
@@ -51,19 +51,20 @@ impl Default for Wheel<4, SpinIter<u64>> {
 
 #[derive(Clone)]
 struct Spin<I> {
-    steps: I,
+    steps: Cycle<I>,
     n: u64,
 }
 
 impl<I> Iterator for Spin<I>
 where
-    I: Iterator<Item = u64>,
+    I: Iterator<Item = u64> + Clone,
 {
     type Item = u64;
 
     fn next(&mut self) -> Option<Self::Item> {
         let n = self.n;
-        self.n += self.steps.next()?;
+        // SAFETY: self.steps is a Cycle
+        self.n += unsafe { self.steps.next().unwrap_unchecked() };
         Some(n)
     }
 }
@@ -93,11 +94,13 @@ where
     }
 }
 
+type TableEntry<I> = Reverse<List<u64, MulBy<I, u64>>>;
+
 struct Sieve<I> {
     x: Option<u64>,
     xs: I,
     // NOTE: this is a min-heap, not a max-heap of reversed lists
-    table: BinaryHeap<Reverse<List<u64, MulBy<I, u64>>>>,
+    table: BinaryHeap<TableEntry<I>>,
 }
 
 impl<I> Sieve<I>
@@ -132,29 +135,29 @@ where
         }));
     }
 
+    /// Returns `true` iff the first entry's head `n` satisfies `n <= x`
+    #[inline]
+    fn is_composite(&self, x: u64) -> bool {
+        matches!(self.table.peek(), Some(Reverse(List { head, .. })) if *head <= x)
+    }
+
     /// Remove all numbers `n` stored in the [`table`](Self::table) such that `n <= x`
     fn adjust(&mut self, x: u64) {
-        loop {
+        // stop when we've reached x
+        while self.is_composite(x) {
             // take out the first list, advance it, and re-insert the rest back
-            let mut list = self.table.peek_mut();
+            let list = self.table.peek_mut();
 
-            let Some(Reverse(List { head, tail })) = list.as_deref_mut() else {
-                break;
-            };
+            // SAFETY: peek_mut must return Some due to the peek check in is_composite
+            let mut list = unsafe { list.unwrap_unchecked() };
 
-            // actually, stop when we've reached x
-            if *head > x {
-                break;
-            }
+            let Reverse(List { head, tail }) = &mut *list;
 
             // advance the list (we should never run out given an infinite input stream)
             match tail.next() {
-                Some(h) => {
-                    *head = h;
-                }
+                Some(h) => *head = h,
                 None => {
-                    drop(list);
-                    let _ = self.table.pop();
+                    let _ = binary_heap::PeekMut::<'_, TableEntry<I>>::pop(list);
                 }
             }
         }
@@ -175,12 +178,11 @@ where
         let x = loop {
             let x = self.xs.next()?;
 
-            match self.table.peek() {
-                Some(Reverse(List { head, .. })) if *head <= x => {
-                    // x is not a prime, so adjust the table and continue searching
-                    self.adjust(x);
-                }
-                _ => break x,
+            if self.is_composite(x) {
+                // x is not a prime, so adjust the table and continue searching
+                self.adjust(x);
+            } else {
+                break x;
             }
         };
 
