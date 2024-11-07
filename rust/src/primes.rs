@@ -4,11 +4,14 @@ use std::iter::{Copied, Cycle};
 
 /// Returns an infinite stream of prime numbers
 ///
-/// Implementation based on [_The Genuine Sieve of Eratosthenes_][doi] paper.
+/// The implementation is based on the following papers:
+///  - [_The Genuine Sieve of Eratosthenes_][sieve] for the sieve algorithm
+///  - [_An Introduction to Prime Number Sieves_][wheel] for the generic wheel
 ///
-/// [doi]: https://doi.org/10.1017/S0956796808007004
+/// [sieve]: https://doi.org/10.1017/S0956796808007004
+/// [wheel]: https://research.cs.wisc.edu/techreports/1990/TR909.pdf
 pub fn stream() -> impl Iterator<Item = u32> {
-    let Wheel { primes, spin } = Wheel::<4, _>::default();
+    let Wheel { primes, spin } = Wheel::<8, _>::new();
     primes.into_iter().chain(Sieve::new(spin)).map(|p| p as u32)
 }
 
@@ -26,28 +29,88 @@ struct Wheel<const N: usize, I: Iterator<Item = u64>> {
     spin: Spin<I>,
 }
 
-type SpinIter<T> = Copied<std::slice::Iter<'static, T>>;
+impl<const N: usize> Wheel<N, SpinIter<u64>> {
+    fn new() -> Self {
+        use num::integer::gcd;
+        use std::cell::RefCell;
+        use std::collections::hash_map::{Entry, HashMap};
 
-impl Default for Wheel<4, SpinIter<u64>> {
-    fn default() -> Self {
-        use once_cell::sync::Lazy;
+        assert!(N > 0, "N cannot be 0");
 
-        static STEPS: &[u64] = &[
-            2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 2, 4, 8, 6, 4, 6,
-            2, 4, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2, 10,
-        ];
+        // find the first N primes (using a naive algorithm)
+        let primes = Self::primes();
 
-        static SPIN: Lazy<Spin<SpinIter<u64>>> = Lazy::new(|| Spin {
-            steps: STEPS.iter().copied().cycle(),
-            n: 11,
+        std::thread_local! {
+            // NOTE: we're using a static cache of wheels so the returned spin iter does not have
+            // to clone the whole wheel Vec, and to keep the Wheel 'static
+            static WHEELS: RefCell<HashMap<usize, &'static [u64]>> = RefCell::new(HashMap::new());
+        }
+
+        let wheel = WHEELS.with(move |wheels| match wheels.borrow_mut().entry(N) {
+            Entry::Vacant(e) => {
+                let m = primes.iter().product::<u64>() as usize;
+
+                // NOTE: u16 gaps are sufficient for u32 primes
+                // https://en.wikipedia.org/wiki/Prime_gap
+                let mut wheel = (0..m)
+                    .map(|x| u16::from(gcd(x, m) == 1))
+                    .collect::<Vec<_>>();
+
+                let mut y = m - 1;
+                wheel[y] = 2;
+
+                for x in (0..(m - 1)).rev() {
+                    if wheel[x] == 0 {
+                        continue;
+                    }
+
+                    wheel[x] = (y - x) as u16;
+                    y = x;
+                }
+
+                let wheel = wheel
+                    .into_iter()
+                    .filter_map(|x| if x != 0 { Some(x as u64) } else { None })
+                    .collect::<Vec<_>>()
+                    .into_boxed_slice();
+
+                // NOTE: since N is const, leaking this should be ok
+                e.insert(Box::leak(wheel))
+            }
+
+            Entry::Occupied(e) => *e.get(),
         });
 
-        Self {
-            primes: [2, 3, 5, 7],
-            spin: SPIN.clone(),
+        // the very first item is the next prime p - 1, so initialize n to 1 to offset this
+        let spin = Spin {
+            steps: wheel.iter().copied().cycle(),
+            n: 1,
+        };
+
+        Self { primes, spin }
+    }
+
+    fn primes() -> [u64; N] {
+        debug_assert!(N > 0, "N cannot be 0");
+
+        let mut primes = [0; N];
+        primes[0] = 2;
+        let mut n = 3;
+        let mut k = 1;
+
+        while k < N {
+            if (0..k).all(|i| n % primes[i] != 0) {
+                primes[k] = n;
+                k += 1;
+            }
+            n += 2;
         }
+
+        primes
     }
 }
+
+type SpinIter<T> = Copied<std::slice::Iter<'static, T>>;
 
 #[derive(Clone)]
 struct Spin<I> {
@@ -62,10 +125,9 @@ where
     type Item = u64;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let n = self.n;
         // SAFETY: self.steps is a Cycle
         self.n += unsafe { self.steps.next().unwrap_unchecked() };
-        Some(n)
+        Some(self.n)
     }
 }
 
@@ -231,6 +293,30 @@ mod tests {
     use rstest::*;
 
     use std::time::Duration;
+
+    #[rstest]
+    #[case([2])]
+    #[case([2, 3])]
+    #[case([2, 3, 5])]
+    #[case([2, 3, 5, 7])]
+    #[case([2, 3, 5, 7, 11])]
+    #[timeout(Duration::from_millis(100))]
+    #[trace]
+    fn init_primes<const N: usize>(#[case] expected: [u64; N]) {
+        assert_eq!(expected, Wheel::primes());
+    }
+
+    #[rstest]
+    #[case([2], &[3, 5, 7, 9, 11, 13, 15])] // [2]
+    #[case([2, 3], &[5, 7, 11, 13, 17, 19, 23, 25, 29])] // [4, 2]
+    #[case([2, 3, 5], &[7, 11, 13, 17, 19, 23, 29, 31, 37, 41])] // [6, 4, 2, 4, 2, 4, 6, 2]
+    #[trace]
+    fn small_wheels<const N: usize>(#[case] expected_primes: [u64; N], #[case] expected: &[u64]) {
+        let Wheel { primes, spin } = Wheel::<N, _>::new();
+        let actual = spin.take(expected.len()).collect::<Vec<_>>();
+        assert_eq!(expected_primes, primes);
+        assert_eq!(expected, actual);
+    }
 
     #[rstest]
     #[case(0, &[2, 3, 5, 7, 11, 13, 17, 19, 23, 29])]
