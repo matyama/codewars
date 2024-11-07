@@ -1,6 +1,11 @@
+use std::cell::RefCell;
 use std::cmp::{Ordering, Reverse};
 use std::collections::binary_heap::{self, BinaryHeap};
+use std::collections::hash_map::{Entry, HashMap};
 use std::iter::{Copied, Cycle};
+
+use num::integer::{gcd, sqrt};
+use num::CheckedMul;
 
 /// Returns an infinite stream of prime numbers
 ///
@@ -12,7 +17,7 @@ use std::iter::{Copied, Cycle};
 /// [wheel]: https://research.cs.wisc.edu/techreports/1990/TR909.pdf
 pub fn stream() -> impl Iterator<Item = u32> {
     let Wheel { primes, spin } = Wheel::<8, _>::new();
-    primes.into_iter().chain(Sieve::new(spin)).map(|p| p as u32)
+    primes.into_iter().chain(Sieve::new(spin))
 }
 
 /// The [`Wheel`] optimizes the input to the [`Sieve`] as follows:
@@ -24,17 +29,13 @@ pub fn stream() -> impl Iterator<Item = u32> {
 /// For instance, a `Wheel<1>` could be imagined as an initial prime `[2]` and a filter of all the
 /// _even_ numbers `(3..).filter(|n| n % 2 != 0)`. With larger `N`, this filter is implemented as
 /// an  iterator called [`Spin`].
-struct Wheel<const N: usize, I: Iterator<Item = u64>> {
-    primes: [u64; N],
+struct Wheel<const N: usize, I: Iterator<Item = u32>> {
+    primes: [u32; N],
     spin: Spin<I>,
 }
 
-impl<const N: usize> Wheel<N, SpinIter<u64>> {
+impl<const N: usize> Wheel<N, SpinIter<u32>> {
     fn new() -> Self {
-        use num::integer::gcd;
-        use std::cell::RefCell;
-        use std::collections::hash_map::{Entry, HashMap};
-
         assert!(N > 0, "N cannot be 0");
 
         // find the first N primes (using a naive algorithm)
@@ -43,12 +44,12 @@ impl<const N: usize> Wheel<N, SpinIter<u64>> {
         std::thread_local! {
             // NOTE: we're using a static cache of wheels so the returned spin iter does not have
             // to clone the whole wheel Vec, and to keep the Wheel 'static
-            static WHEELS: RefCell<HashMap<usize, &'static [u64]>> = RefCell::new(HashMap::new());
+            static WHEELS: RefCell<HashMap<usize, &'static [u32]>> = RefCell::new(HashMap::new());
         }
 
         let wheel = WHEELS.with(move |wheels| match wheels.borrow_mut().entry(N) {
             Entry::Vacant(e) => {
-                let m = primes.iter().product::<u64>() as usize;
+                let m = primes.iter().product::<u32>() as usize;
 
                 // NOTE: u16 gaps are sufficient for u32 primes
                 // https://en.wikipedia.org/wiki/Prime_gap
@@ -70,7 +71,7 @@ impl<const N: usize> Wheel<N, SpinIter<u64>> {
 
                 let wheel = wheel
                     .into_iter()
-                    .filter_map(|x| if x != 0 { Some(x as u64) } else { None })
+                    .filter_map(|x| if x != 0 { Some(x as u32) } else { None })
                     .collect::<Vec<_>>()
                     .into_boxed_slice();
 
@@ -90,7 +91,7 @@ impl<const N: usize> Wheel<N, SpinIter<u64>> {
         Self { primes, spin }
     }
 
-    fn primes() -> [u64; N] {
+    fn primes() -> [u32; N] {
         debug_assert!(N > 0, "N cannot be 0");
 
         let mut primes = [0; N];
@@ -115,14 +116,14 @@ type SpinIter<T> = Copied<std::slice::Iter<'static, T>>;
 #[derive(Clone)]
 struct Spin<I> {
     steps: Cycle<I>,
-    n: u64,
+    n: u32,
 }
 
 impl<I> Iterator for Spin<I>
 where
-    I: Iterator<Item = u64> + Clone,
+    I: Iterator<Item = u32> + Clone,
 {
-    type Item = u64;
+    type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
         // SAFETY: self.steps is a Cycle
@@ -145,52 +146,56 @@ impl<T, I: Iterator<Item = T> + Clone> MulBy<I, T> {
 impl<I, T> Iterator for MulBy<I, T>
 where
     I: Iterator<Item = T>,
-    <I as Iterator>::Item: std::ops::Mul<T, Output = T>,
+    <I as Iterator>::Item: CheckedMul<Output = T>,
     T: Copy,
 {
     type Item = I::Item;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|x| x * self.1)
+        self.0.next().and_then(|x| x.checked_mul(&self.1))
     }
 }
 
-type TableEntry<I> = Reverse<List<u64, MulBy<I, u64>>>;
+type TableEntry<I> = Reverse<List<u32, MulBy<I, u32>>>;
 
 struct Sieve<I> {
-    x: Option<u64>,
+    x: Option<u32>,
     xs: I,
     // NOTE: this is a min-heap, not a max-heap of reversed lists
     table: BinaryHeap<TableEntry<I>>,
+    max: u32,
 }
 
 impl<I> Sieve<I>
 where
-    I: Iterator<Item = u64> + Clone,
+    I: Iterator<Item = u32> + Clone,
 {
     fn new(mut xs: I) -> Self {
-        let Some(x) = xs.next() else {
-            return Self {
-                x: None,
-                xs,
-                table: BinaryHeap::new(),
-            };
-        };
-
         let mut this = Self {
-            x: Some(x),
+            x: xs.next(),
             xs,
             table: BinaryHeap::new(),
+            max: sqrt(u32::MAX),
         };
 
-        this.insert_prime(x);
+        if let Some(x) = this.x {
+            this.insert_prime(x);
+        }
 
         this
     }
 
     /// Registers new lazy [`List`] of multiples of a prime `p` in the [`table`](Self::table)
-    fn insert_prime(&mut self, p: u64) {
+    ///
+    /// Note that since we insert `[p^2, ...]` into the table, we ignore any `p > sqrt(u32::MAX)`.
+    /// This is fine, because we can never get to them under the `u32` prime representation (see
+    /// the [`is_composite`](Self::is_composite) check).
+    fn insert_prime(&mut self, p: u32) {
+        if p > self.max {
+            return;
+        }
+
         self.table.push(Reverse(List {
             head: p * p,
             tail: MulBy::new(&self.xs, p),
@@ -199,12 +204,12 @@ where
 
     /// Returns `true` iff the first entry's head `n` satisfies `n <= x`
     #[inline]
-    fn is_composite(&self, x: u64) -> bool {
+    fn is_composite(&self, x: u32) -> bool {
         matches!(self.table.peek(), Some(Reverse(List { head, .. })) if *head <= x)
     }
 
     /// Remove all numbers `n` stored in the [`table`](Self::table) such that `n <= x`
-    fn adjust(&mut self, x: u64) {
+    fn adjust(&mut self, x: u32) {
         // stop when we've reached x
         while self.is_composite(x) {
             // take out the first list, advance it, and re-insert the rest back
@@ -215,7 +220,7 @@ where
 
             let Reverse(List { head, tail }) = &mut *list;
 
-            // advance the list (we should never run out given an infinite input stream)
+            // advance the list
             match tail.next() {
                 Some(h) => *head = h,
                 None => {
@@ -228,9 +233,9 @@ where
 
 impl<I> Iterator for Sieve<I>
 where
-    I: Iterator<Item = u64> + Clone,
+    I: Iterator<Item = u32> + Clone,
 {
-    type Item = u64;
+    type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let x @ Some(_) = self.x.take() {
@@ -302,7 +307,7 @@ mod tests {
     #[case([2, 3, 5, 7, 11])]
     #[timeout(Duration::from_millis(100))]
     #[trace]
-    fn init_primes<const N: usize>(#[case] expected: [u64; N]) {
+    fn init_primes<const N: usize>(#[case] expected: [u32; N]) {
         assert_eq!(expected, Wheel::primes());
     }
 
@@ -311,7 +316,7 @@ mod tests {
     #[case([2, 3], &[5, 7, 11, 13, 17, 19, 23, 25, 29])] // [4, 2]
     #[case([2, 3, 5], &[7, 11, 13, 17, 19, 23, 29, 31, 37, 41])] // [6, 4, 2, 4, 2, 4, 6, 2]
     #[trace]
-    fn small_wheels<const N: usize>(#[case] expected_primes: [u64; N], #[case] expected: &[u64]) {
+    fn small_wheels<const N: usize>(#[case] expected_primes: [u32; N], #[case] expected: &[u32]) {
         let Wheel { primes, spin } = Wheel::<N, _>::new();
         let actual = spin.take(expected.len()).collect::<Vec<_>>();
         assert_eq!(expected_primes, primes);
@@ -342,5 +347,13 @@ mod tests {
     #[trace]
     fn bench(#[case] n: usize) {
         let _ = stream().take(n).count();
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case(64_955_634, 1_294_268_491)]
+    #[trace]
+    fn large_prime(#[case] n: usize, #[case] expected: u32) {
+        assert_eq!(Some(expected), stream().nth(n - 1));
     }
 }
