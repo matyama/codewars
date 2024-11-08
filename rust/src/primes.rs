@@ -2,7 +2,6 @@ use std::cell::RefCell;
 use std::cmp::{Ordering, Reverse};
 use std::collections::binary_heap::{self, BinaryHeap};
 use std::collections::hash_map::{Entry, HashMap};
-use std::iter::{Copied, Cycle};
 
 use num::integer::{gcd, sqrt};
 use num::CheckedMul;
@@ -29,12 +28,16 @@ pub fn stream() -> impl Iterator<Item = u32> {
 /// For instance, a `Wheel<1>` could be imagined as an initial prime `[2]` and a filter of all the
 /// _even_ numbers `(3..).filter(|n| n % 2 != 0)`. With larger `N`, this filter is implemented as
 /// an  iterator called [`Spin`].
-struct Wheel<const N: usize, I: Iterator<Item = u32>> {
+///
+/// Note that the individual steps of the [`Spin`] (not to be confused with the produced numbers)
+/// are represented as `u16`, which should be sufficient range for [gaps between two consecutive
+/// `u32` prime numbers](https://en.wikipedia.org/wiki/Prime_gap).
+struct Wheel<'s, const N: usize, S: Iterator<Item = &'s u16>> {
     primes: [u32; N],
-    spin: Spin<I>,
+    spin: Spin<S>,
 }
 
-impl<const N: usize> Wheel<N, SpinIter<u32>> {
+impl<const N: usize> Wheel<'static, N, std::slice::Iter<'static, u16>> {
     fn new() -> Self {
         assert!(N > 0, "N cannot be 0");
 
@@ -44,39 +47,27 @@ impl<const N: usize> Wheel<N, SpinIter<u32>> {
         std::thread_local! {
             // NOTE: we're using a static cache of wheels so the returned spin iter does not have
             // to clone the whole wheel Vec, and to keep the Wheel 'static
-            static WHEELS: RefCell<HashMap<usize, &'static [u32]>> = RefCell::new(HashMap::new());
+            static WHEELS: RefCell<HashMap<usize, &'static [u16]>> = RefCell::new(HashMap::new());
         }
 
         let wheel = WHEELS.with(move |wheels| match wheels.borrow_mut().entry(N) {
             Entry::Vacant(e) => {
-                let m = primes.iter().product::<u32>() as usize;
-
-                // NOTE: u16 gaps are sufficient for u32 primes
-                // https://en.wikipedia.org/wiki/Prime_gap
-                let mut wheel = (0..m)
-                    .map(|x| u16::from(gcd(x, m) == 1))
-                    .collect::<Vec<_>>();
+                let m = primes.iter().product::<u32>();
 
                 let mut y = m - 1;
-                wheel[y] = 2;
+                let mut wheel = vec![2];
 
-                for x in (0..(m - 1)).rev() {
-                    if wheel[x] == 0 {
-                        continue;
-                    }
-
-                    wheel[x] = (y - x) as u16;
+                for x in (0..y).rev().filter(|&x| gcd(x, m) == 1) {
+                    // NOTE: u16 gaps are sufficient for u32 primes
+                    wheel.push((y - x) as u16);
                     y = x;
                 }
 
-                let wheel = wheel
-                    .into_iter()
-                    .filter_map(|x| if x != 0 { Some(x as u32) } else { None })
-                    .collect::<Vec<_>>()
-                    .into_boxed_slice();
+                wheel.reverse();
+                wheel.shrink_to_fit();
 
                 // NOTE: since N is const, leaking this should be ok
-                e.insert(Box::leak(wheel))
+                e.insert(Box::leak(wheel.into_boxed_slice()))
             }
 
             Entry::Occupied(e) => *e.get(),
@@ -84,7 +75,7 @@ impl<const N: usize> Wheel<N, SpinIter<u32>> {
 
         // the very first item is the next prime p - 1, so initialize n to 1 to offset this
         let spin = Spin {
-            steps: wheel.iter().copied().cycle(),
+            steps: wheel.iter().cycle(),
             n: 1,
         };
 
@@ -111,23 +102,21 @@ impl<const N: usize> Wheel<N, SpinIter<u32>> {
     }
 }
 
-type SpinIter<T> = Copied<std::slice::Iter<'static, T>>;
-
 #[derive(Clone)]
 struct Spin<I> {
-    steps: Cycle<I>,
+    steps: std::iter::Cycle<I>,
     n: u32,
 }
 
-impl<I> Iterator for Spin<I>
+impl<'s, I> Iterator for Spin<I>
 where
-    I: Iterator<Item = u32> + Clone,
+    I: Iterator<Item = &'s u16> + Clone,
 {
     type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
         // SAFETY: self.steps is a Cycle
-        self.n += unsafe { self.steps.next().unwrap_unchecked() };
+        self.n += unsafe { *self.steps.next().unwrap_unchecked() } as u32;
         Some(self.n)
     }
 }
